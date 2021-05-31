@@ -1,0 +1,72 @@
+import 'package:flutter/material.dart';
+import 'package:poke_team/services/pokeApi.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+
+class Loading extends StatefulWidget {
+  const Loading({Key key}) : super(key: key);
+
+  @override
+  _LoadingState createState() => _LoadingState();
+}
+
+class _LoadingState extends State<Loading> {
+  static Future<Map> safeApiCall(String pokeName) async {
+    Map returnMap = new Map();
+    try {
+      PokeApi pAPI = new PokeApi();
+      returnMap['pokemon'] = await pAPI.loadByName(pokeName);
+    } catch (ex) {
+      print('loading.dart: exception print -> ${ex.toString()}');
+      returnMap['pokemon'] = null;
+      returnMap['ex_code'] = 1;
+    }
+    returnMap['ex_code'] = 0;
+    return returnMap;
+  }
+
+  void loadPokemonFromApi(String pokeName) async {
+    Map safePokemonReturn = await safeApiCall(pokeName);
+    Navigator.pushReplacementNamed(context, '/poke',
+        arguments: {'pokemon': safePokemonReturn['pokemon'], 'add': false});
+  }
+
+  void addPokemonByName(String pokeName) async {
+    if (pokeName == '' || pokeName == null) {
+      Navigator.pop(context, {'ex_code': 1, 'pokemon': null});
+      return;
+    }
+      Map safePokemonReturn = await safeApiCall(pokeName);
+      if (safePokemonReturn['ex_code'] == 0 &&
+          safePokemonReturn['pokemon'] != null) {
+        dynamic addedPokemon = await Navigator.pushNamed(context, '/poke',
+            arguments: {'pokemon': safePokemonReturn['pokemon'], 'add': true});
+        Navigator.pop(context, {'ex_code': 0, 'pokemon': addedPokemon});
+      } else {
+        Navigator.pop(context, {'ex_code': 1, 'pokemon': null});
+      }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    Map input = ModalRoute.of(context).settings.arguments;
+
+    if (input['add'] == 'true') {
+      addPokemonByName(input['pokeName']);
+    } else {
+      loadPokemonFromApi(input['pokeName']);
+    }
+
+    return Scaffold(
+      backgroundColor: Colors.amber,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(38.0),
+          child: SpinKitHourGlass(
+            color: Colors.grey[500],
+            size: 100.0,
+          ),
+        ),
+      ),
+    );
+  }
+}
