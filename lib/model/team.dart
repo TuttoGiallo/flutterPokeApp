@@ -7,6 +7,7 @@ class Team{
   static final Team _instance = Team._privateConstructor();
   List <Pokemon> teamMembers = [  ];
 
+  //costruttore privato
   Team._privateConstructor();
 
   factory Team(){
@@ -21,8 +22,11 @@ class Team{
     this.teamMembers.remove(pokemon);
   }
 
-  bool teamFull(){
+  bool isTeamFull(){
     return teamMembers.length >= 6;
   }
 
+  bool isTeamEmpty(){
+    return teamMembers.length == 0;
+  }
 }

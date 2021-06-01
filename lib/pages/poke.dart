@@ -3,6 +3,7 @@ import 'package:poke_team/model/pokemon.dart';
 import 'package:poke_team/widgets/pokeBaseStatsCard.dart';
 import 'package:poke_team/widgets/pokeInfoCard.dart';
 import 'package:poke_team/widgets/pokeTypesEffectCard.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 class Poke extends StatefulWidget {
   @override
@@ -39,6 +40,7 @@ class _PokeState extends State<Poke> {
           poke: this.poke, onAddButtonPressed: onAddButtonPress),
       PokeTypesEffectCard(poke: this.poke),
       PokeBaseStatsCard(poke: this.poke),
+      //WebView(initialUrl: 'https://bulbapedia.bulbagarden.net/wiki/Pikachu_(Pokémon)') TODO webview!
     ];
 
     return Scaffold(
@@ -63,10 +65,15 @@ class _PokeState extends State<Poke> {
               icon: Icon(Icons.bar_chart),
               label: 'Base Stats',
             ),
+            // BottomNavigationBarItem(
+            //   icon: Icon(Icons.web),
+            //   label: 'Wiki on Web',
+            // ), //TODO webview!
           ],
           currentIndex: _selectedIndex,
           selectedItemColor: Colors.grey[100],
           onTap: _onBottomItemTapped,
+            type: BottomNavigationBarType.fixed,
         ),
         body: Container(
           child: _widgetOptions.elementAt(_selectedIndex),

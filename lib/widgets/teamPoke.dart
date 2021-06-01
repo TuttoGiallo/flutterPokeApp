@@ -2,14 +2,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:poke_team/model/pokemon.dart';
 
-class TeamPoke extends StatefulWidget {
-  final Pokemon poke;
 
+@deprecated
+class TeamPoke extends StatefulWidget {
+  const TeamPoke({Key key, @required this.poke, @required this.deletePokemonFunctionCallBack}) : super(key: key);
+
+  final Pokemon poke;
   final Function(Pokemon poke) deletePokemonFunctionCallBack;
 
-  TeamPoke(this.poke, this.deletePokemonFunctionCallBack);
-  //TODO capire come fare un costruttore con il codice di default 'stfull'
-  //TODO: capire anche come funziona il "@required this.notifyParent"
   @override
   _TeamPokeState createState() => _TeamPokeState();
 }

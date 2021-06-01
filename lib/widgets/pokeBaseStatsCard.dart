@@ -51,11 +51,11 @@ class SinglePokeBaseStat extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Color barColor;
-    if (stat < 50)
+    if (stat < 40)
       barColor = Colors.red;
-    else if (stat < 90)
+    else if (stat < 80)
       barColor = Colors.deepOrangeAccent;
-    else if (stat < 130)
+    else if (stat < 120)
       barColor = Colors.yellow;
     else if (stat < 160)
       barColor = Colors.lightGreen;

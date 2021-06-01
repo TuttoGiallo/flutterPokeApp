@@ -1,3 +1,4 @@
+import 'package:poke_team/model/ability.dart';
 import 'package:poke_team/model/pokemonType.dart';
 import 'package:poke_team/model/pokemonTypes.dart';
 
@@ -15,6 +16,8 @@ class Pokemon {
 
   String urlSprite;
 
+  List<Ability> abilities;
+
   //Base Stats:
   Map <BaseStatName, int> baseStats = {
     BaseStatName.hp: 0,
@@ -26,7 +29,9 @@ class Pokemon {
   };
 
 
-  Pokemon({this.name, this.id, this.type1, this.type2});
+  Pokemon({this.name, this.id, this.type1, this.type2}){
+    this.abilities = [];
+  }
 
   Pokemon.fromStringType(this.name, {this.id, String type1, String type2}) {
     this.type1 = PokemonTypes().getTypeFromName(type1 ?? '');

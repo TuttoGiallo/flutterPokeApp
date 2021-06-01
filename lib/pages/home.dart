@@ -3,6 +3,9 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:poke_team/model/team.dart';
 import 'package:poke_team/model/pokemon.dart';
 import 'package:poke_team/services/loaderDB.dart';
+import 'package:poke_team/services/loadingApi.dart';
+import 'package:poke_team/widgets/pokeElement.dart';
+import 'package:poke_team/widgets/teamCard.dart';
 import 'package:poke_team/widgets/teamPoke.dart';
 
 class Home extends StatefulWidget {
@@ -14,20 +17,12 @@ class Home extends StatefulWidget {
 
 //TODO: creare un widget separato per la gestione visualizzazione del team
 class _HomeState extends State<Home> {
-  LoaderDB loaderDB = new LoaderDB();
+  LoaderDB loaderDB = new LoaderDB(); //TODO: cambiare in singleton!
   List<TeamPoke> teamPokelist;
+  List<PokeElement> teamPokeElementList;
+  List<String> allPokemonName;
   Team team = Team();
   bool loaded = false;
-
-
-  final addController = TextEditingController();
-
-  @override
-  void dispose() {
-    addController.dispose();
-    //Clean up the controller when the widget is disposed
-    super.dispose();
-  }
 
   Function() refresh() => () {
         setState(() {});
@@ -39,12 +34,49 @@ class _HomeState extends State<Home> {
     super.initState();
   }
 
-  loadFromDBAsync() async{
+  loadFromDBAsync() async {
     await loaderDB.loadTeam();
+    await LoadingApi.getInstance().then((instanceLoadingApi) =>
+        allPokemonName = instanceLoadingApi.getAllPokemonName());
     loaded = true;
     setState(() {
       //TODO passare il caricamento del team qui e togliere il team come singleton!!
     });
+  }
+
+  onAddPokemon(String pokemonNameOrId) async {
+    dynamic mapAddedPokemon =
+        await Navigator.pushNamed(context, '/loading', arguments: {
+      'pokeName': pokemonNameOrId,
+      'add': 'true',
+    });
+    if (mapAddedPokemon['ex_code'] == 1) {
+      showDialog<String>(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+          title: const Text('Pokemon non trovato'),
+          content: const Text('Il nome o l\'ID inserito non è corretto.'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
+    } else {
+      if (mapAddedPokemon['pokemon'] != null ? true : false) {
+        setState(() {
+          team.addPokemon(mapAddedPokemon['pokemon']);
+          loaderDB.insertPokeInTeam(mapAddedPokemon['pokemon']);
+        });
+      }
+    }
+  }
+
+  onPokemonTapForInfo(Pokemon pokemon) async {
+    await Navigator.pushNamed(context, '/loading',
+        arguments: {'pokeName': pokemon.name, 'add': 'false'}); //TODO quando sarà paremetrizzato non si potrà passare il nome ma si dovrà passare l'intero pokemon
   }
 
   @override
@@ -63,15 +95,28 @@ class _HomeState extends State<Home> {
         ),
       );
     } else {
-      addController.clear();
-//TODO: togliere focus dal campo aggiunta
-      Team team = Team();
+      // addController.clear(); TODO clear?!
+      //TODO: togliere focus dal campo aggiunta
+      Team team = Team(); //TODO: togliere la singleton team
       teamPokelist = [];
       for (Pokemon p in team.teamMembers) {
-        teamPokelist.add(new TeamPoke(
-            p,
-                (Pokemon poke) =>
-            {
+        PageStorageKey key = new PageStorageKey(p);
+        teamPokelist.add(new TeamPoke(key: key,
+            poke: p,
+            deletePokemonFunctionCallBack: (Pokemon poke) => {
+                  setState(() {
+                    team.removePokemon(poke);
+                    loaderDB.deletePokemonInTeam(poke);
+                  })
+                }));
+      }
+
+      teamPokeElementList = [];
+      for(Pokemon p in team.teamMembers) {
+        PageStorageKey key = new PageStorageKey(p);
+        teamPokeElementList.add(new PokeElement(key: key,
+            poke: p,
+            deletePokemonFunctionCallBack: (Pokemon poke) => {
               setState(() {
                 team.removePokemon(poke);
                 loaderDB.deletePokemonInTeam(poke);
@@ -79,13 +124,17 @@ class _HomeState extends State<Home> {
             }));
       }
 
+
       return Scaffold(
           appBar: AppBar(
             title: Text('Team'),
             centerTitle: true,
             backgroundColor: Colors.amber,
           ),
-          body: Container(
+          body: TeamCard(team: team, allPokemonName: allPokemonName, onAddPokemonInTeam: onAddPokemon, onPokemonTapForInfo: onPokemonTapForInfo),
+
+      );
+     /*     Container(
             color: Colors.amber,
             height: double.infinity,
             //messo per far fittare lo sfondo sempre con la schermata... anche quando la scroll è minore dello schermo. TODO:testare on un tablet!
@@ -101,104 +150,17 @@ class _HomeState extends State<Home> {
                 child: Container(
                   child: Column(
                     children: [
-                      Column(
-                        children: teamPokelist,
-                      ),
                       Visibility(
                         visible: !team.teamFull(),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Colors.grey[400],
-                              border: Border.all(
-                                color: Colors.amber,
-                                width: 2,
-                              ),
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Padding(
-                                  padding:
-                                  EdgeInsets.fromLTRB(16.0, 0.0, 0.0, 10.0),
-                                  child: SizedBox(
-                                    width: 250,
-                                    //TODO: size fissa mi sembra una minchiata
-                                    child: TextField(
-                                        controller: addController,
-                                        decoration: const InputDecoration(
-                                            helperText: "Enter Pokemon name"),
-                                        style: TextStyle(
-                                          fontSize: 28.0,
-                                          color: Colors.grey[800],
-                                          fontStyle: FontStyle.italic,
-                                        )),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.fromLTRB(
-                                      0.0, 0.0, 14.0, 0.0),
-                                  child: FloatingActionButton(
-                                    backgroundColor: Colors.amber,
-                                    splashColor: Colors.yellowAccent,
-                                    onPressed: () async {
-                                      dynamic mapAddedPokemon =
-                                      await Navigator.pushNamed(
-                                          context, '/loading',
-                                          arguments: {
-                                            'pokeName': addController.text,
-                                            'add': 'true',
-                                          });
-                                      if (mapAddedPokemon['ex_code'] == 1) {
-                                        showDialog<String>(
-                                          context: context,
-                                          builder: (BuildContext context) =>
-                                              AlertDialog(
-                                                title:
-                                                const Text(
-                                                    'Pokemon non trovato'),
-                                                content: const Text(
-                                                    'Il nome o l\'ID inserito non è corretto.'),
-                                                actions: <Widget>[
-                                                  TextButton(
-                                                    onPressed: () =>
-                                                        Navigator.pop(context),
-                                                    child: const Text('OK'),
-                                                  ),
-                                                ],
-                                              ),
-                                        );
-                                      } else {
-                                        if (mapAddedPokemon['pokemon'] != null
-                                            ? true
-                                            : false) {
-                                          setState(() {
-                                            team.addPokemon(
-                                                mapAddedPokemon['pokemon']);
-                                            loaderDB.insertPokeInTeam(
-                                                mapAddedPokemon['pokemon']);
-                                          });
-                                        }
-                                      }
-                                    },
-                                    child: Icon(
-                                      Icons.add,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      )
+                        child: AddPokemonInTeam(allPokemonName: allPokemonName, onAddPokemonConfirm: onAddPokemon),
+                      ),
+                      Column(children: teamPokelist),
                     ],
                   ),
                 ),
               ),
             ),
-          ));
+          ));*/
     }
   }
 }
