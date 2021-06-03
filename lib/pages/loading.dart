@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:poke_team/model/pokemon.dart';
+import 'package:poke_team/model/pokemonInstance.dart';
+import 'package:poke_team/model/team.dart';
 import 'package:poke_team/services/pokeApi.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
@@ -24,22 +27,23 @@ class _LoadingState extends State<Loading> {
     return returnMap;
   }
 
-  void loadPokemonFromApi(String pokeName) async {
-    Map safePokemonReturn = await safeApiCall(pokeName);
+  void loadPokemonFromApi(PokemonInstance pokemonInstance) async {
     Navigator.pushReplacementNamed(context, '/poke',
-        arguments: {'pokemon': safePokemonReturn['pokemon'], 'add': false});
+        arguments: {'pokemon': pokemonInstance, 'add': false});
   }
 
-  void addPokemonByName(String pokeName) async {
+  void addPokemonByName(String pokeName, Team team) async {
     if (pokeName == '' || pokeName == null) {
       Navigator.pop(context, {'ex_code': 1, 'pokemon': null});
       return;
     }
       Map safePokemonReturn = await safeApiCall(pokeName);
+      Pokemon poke;
       if (safePokemonReturn['ex_code'] == 0 &&
-          safePokemonReturn['pokemon'] != null) {
+          (poke = safePokemonReturn['pokemon']) != null) {
+        PokemonInstance pokemonInstance = new PokemonInstance(poke, team,poke.name + 'Giallo');
         dynamic addedPokemon = await Navigator.pushNamed(context, '/poke',
-            arguments: {'pokemon': safePokemonReturn['pokemon'], 'add': true});
+            arguments: {'pokemon': pokemonInstance, 'add': true});
         Navigator.pop(context, {'ex_code': 0, 'pokemon': addedPokemon});
       } else {
         Navigator.pop(context, {'ex_code': 1, 'pokemon': null});
@@ -51,9 +55,9 @@ class _LoadingState extends State<Loading> {
     Map input = ModalRoute.of(context).settings.arguments;
 
     if (input['add'] == 'true') {
-      addPokemonByName(input['pokeName']);
+      addPokemonByName(input['pokemonName'], input['team']);
     } else {
-      loadPokemonFromApi(input['pokeName']);
+      loadPokemonFromApi(input['pokemonInstance']);
     }
 
     return Scaffold(

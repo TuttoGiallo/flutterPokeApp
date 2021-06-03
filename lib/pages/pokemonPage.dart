@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:poke_team/model/pokemon.dart';
+import 'package:poke_team/model/pokemonInstance.dart';
 import 'package:poke_team/widgets/pokeBaseStatsCard.dart';
 import 'package:poke_team/widgets/pokeInfoCard.dart';
 import 'package:poke_team/widgets/pokeTypesEffectCard.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
-class Poke extends StatefulWidget {
+class PokemonPage extends StatefulWidget {
   @override
-  _PokeState createState() => _PokeState();
+  _PokemonPageState createState() => _PokemonPageState();
 }
 
-class _PokeState extends State<Poke> {
+class _PokemonPageState extends State<PokemonPage> {
   Pokemon poke;
   int _selectedIndex;
 
@@ -26,7 +27,7 @@ class _PokeState extends State<Poke> {
     });
   }
 
-  Function onAddButtonPress = (context, Pokemon pokemon) =>  Navigator.pop(context, pokemon);
+  Function onAddButtonPress = (context, PokemonInstance pokemon) =>  Navigator.pop(context, pokemon);
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +38,7 @@ class _PokeState extends State<Poke> {
     List<Widget> _widgetOptions = <Widget>[
       //getPokeInfo(addButtonVisibility),
       PokeInfoCard(addButtonVisibility: pushedArgs['add'],
-          poke: this.poke, onAddButtonPressed: onAddButtonPress),
+          pokemon: this.poke, onAddButtonPressed: onAddButtonPress),
       PokeTypesEffectCard(poke: this.poke),
       PokeBaseStatsCard(poke: this.poke),
       //WebView(initialUrl: 'https://bulbapedia.bulbagarden.net/wiki/Pikachu_(Pokémon)') TODO webview!

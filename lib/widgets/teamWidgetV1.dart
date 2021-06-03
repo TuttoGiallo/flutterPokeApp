@@ -1,28 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:poke_team/model/pokemon.dart';
-import 'package:poke_team/model/team.dart';
+import 'package:poke_team/model/teamV1.dart';
 import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import 'package:tuple/tuple.dart';
 
-class TeamCard extends StatefulWidget {
-  const TeamCard(
+class TeamWidgetV1 extends StatefulWidget {
+  const TeamWidgetV1(
       {Key key,
       @required this.team,
       @required this.allPokemonName,
       @required this.onAddPokemonInTeam,
-      @required this.onPokemonTapForInfo})
+      @required this.onPokemonTapForInfo,
+      @required this.onDeletePokemonFromTeam})
       : super(key: key);
 
-  final Team team;
+  final TeamV1 team;
   final List<String> allPokemonName;
   final Function(String pokemonNameId) onAddPokemonInTeam;
+  final Function(Pokemon pokemon) onDeletePokemonFromTeam;
   final Function(Pokemon pokemon) onPokemonTapForInfo;
 
   @override
-  _TeamCardState createState() => _TeamCardState();
+  _TeamWidgetV1State createState() => _TeamWidgetV1State();
 }
 
-class _TeamCardState extends State<TeamCard> {
+class _TeamWidgetV1State extends State<TeamWidgetV1> {
   ButtonStyle buttonStyle = ElevatedButton.styleFrom(
       primary: Colors.cyan[600],
       onPrimary: Colors.grey[800],
@@ -97,31 +99,51 @@ class _TeamCardState extends State<TeamCard> {
                 ],
               )),
           children: widget.team.teamMembers
-              .map((pokemon) => Container( //TODO: spostare il widget "teamPoke"
-                    key: ValueKey(pokemon),
-                    decoration: BoxDecoration(
-                        color: Colors.grey,
-                        border: Border.all(width: 1, color: Colors.grey[800])),
-                    child: ListTile(
-                      contentPadding: EdgeInsets.fromLTRB(4, 15, 20, 10),
-                      leading: CircleAvatar(
-                        backgroundColor: Colors.amber,
-                        radius: 30,
-                        child: GestureDetector(
-                          onTap: () async => await widget.onPokemonTapForInfo(pokemon),
-                          child: CircleAvatar(
-                              radius: 25,
-                              backgroundColor: Colors.grey[400],
-                              backgroundImage: NetworkImage(
-                                pokemon.urlSprite,
-                              )),
+              .map((pokemon) => Dismissible(
+                    key: UniqueKey(), //key dupplicata per spostamento e
+                    // Provide a function that tells the app
+                    // what to do after an item has been swiped away.
+                    onDismissed: (direction) {
+                      // Remove the item from the data source.
+                      setState(() {
+                        widget.onDeletePokemonFromTeam(pokemon);
+                      });
+
+                      // Then show a snackbar.
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('${pokemon.name} dismissed')));
+                    },
+                    // Show a red background as the item is swiped away.
+                    background: Container(color: Colors.red),
+                    child: Container(
+                      //TODO: spostare il widget "teamPoke"
+                      key: ValueKey(pokemon),
+                      decoration: BoxDecoration(
+                          color: Colors.grey,
+                          border:
+                              Border.all(width: 1, color: Colors.grey[800])),
+                      child: ListTile(
+                        contentPadding: EdgeInsets.fromLTRB(4, 15, 20, 10),
+                        leading: CircleAvatar(
+                          backgroundColor: Colors.amber,
+                          radius: 30,
+                          child: GestureDetector(
+                            onTap: () async =>
+                                await widget.onPokemonTapForInfo(pokemon),
+                            child: CircleAvatar(
+                                radius: 25,
+                                backgroundColor: Colors.grey[400],
+                                backgroundImage: NetworkImage(
+                                  pokemon.urlSprite,
+                                )),
+                          ),
                         ),
+                        title: Text(
+                          pokemon.name,
+                          style: TextStyle(fontSize: 24),
+                        ),
+                        trailing: Icon(Icons.drag_handle_outlined, size: 45),
                       ),
-                      title: Text(
-                        pokemon.name,
-                        style: TextStyle(fontSize: 24),
-                      ),
-                      trailing: Icon(Icons.drag_handle_outlined, size: 45),
                     ),
                   ))
               .toList(),
@@ -158,8 +180,8 @@ class AlertPokemonAdd extends StatelessWidget {
                 //TODO cambiare da string name a oggetto pair name/id
                 clearOnSubmit: false,
                 key: key,
-                decoration:
-                    const InputDecoration(helperText: "Enter Pokemon name or IDß"),
+                decoration: const InputDecoration(
+                    helperText: "Enter Pokemon name or IDß"),
                 suggestions: allPokemonName,
                 itemBuilder: (context, pokemonName) {
                   return Container(

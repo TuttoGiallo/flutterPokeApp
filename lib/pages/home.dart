@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:poke_team/model/team.dart';
+import 'package:poke_team/model/teamV1.dart';
 import 'package:poke_team/model/pokemon.dart';
 import 'package:poke_team/services/loaderDB.dart';
 import 'package:poke_team/services/loadingApi.dart';
 import 'package:poke_team/widgets/pokeElement.dart';
-import 'package:poke_team/widgets/teamCard.dart';
+import 'package:poke_team/widgets/teamWidgetV1.dart';
 import 'package:poke_team/widgets/teamPoke.dart';
 
 class Home extends StatefulWidget {
@@ -21,7 +21,7 @@ class _HomeState extends State<Home> {
   List<TeamPoke> teamPokelist;
   List<PokeElement> teamPokeElementList;
   List<String> allPokemonName;
-  Team team = Team();
+  TeamV1 team = TeamV1();
   bool loaded = false;
 
   Function() refresh() => () {
@@ -37,7 +37,7 @@ class _HomeState extends State<Home> {
   loadFromDBAsync() async {
     await loaderDB.loadTeam();
     await LoadingApi.getInstance().then((instanceLoadingApi) =>
-        allPokemonName = instanceLoadingApi.getAllPokemonName());
+        allPokemonName = LoadingApi.getAllPokemonName());
     loaded = true;
     setState(() {
       //TODO passare il caricamento del team qui e togliere il team come singleton!!
@@ -68,7 +68,7 @@ class _HomeState extends State<Home> {
       if (mapAddedPokemon['pokemon'] != null ? true : false) {
         setState(() {
           team.addPokemon(mapAddedPokemon['pokemon']);
-          loaderDB.insertPokeInTeam(mapAddedPokemon['pokemon']);
+          //loaderDB.insertPokeInTeam(mapAddedPokemon['pokemon'],); TODO correggere questa istruzione dopo la modifica del loader per la gestione di più team
         });
       }
     }
@@ -77,6 +77,11 @@ class _HomeState extends State<Home> {
   onPokemonTapForInfo(Pokemon pokemon) async {
     await Navigator.pushNamed(context, '/loading',
         arguments: {'pokeName': pokemon.name, 'add': 'false'}); //TODO quando sarà paremetrizzato non si potrà passare il nome ma si dovrà passare l'intero pokemon
+  }
+
+  onDeletePokemonFromTeam(Pokemon pokemon){
+    team.removePokemon(pokemon);
+    loaderDB.deletePokemonInTeam(pokemon);
   }
 
   @override
@@ -97,7 +102,7 @@ class _HomeState extends State<Home> {
     } else {
       // addController.clear(); TODO clear?!
       //TODO: togliere focus dal campo aggiunta
-      Team team = Team(); //TODO: togliere la singleton team
+      TeamV1 team = TeamV1(); //TODO: togliere la singleton team
       teamPokelist = [];
       for (Pokemon p in team.teamMembers) {
         PageStorageKey key = new PageStorageKey(p);
@@ -131,7 +136,7 @@ class _HomeState extends State<Home> {
             centerTitle: true,
             backgroundColor: Colors.amber,
           ),
-          body: TeamCard(team: team, allPokemonName: allPokemonName, onAddPokemonInTeam: onAddPokemon, onPokemonTapForInfo: onPokemonTapForInfo),
+          body: TeamWidgetV1(team: team, allPokemonName: allPokemonName, onAddPokemonInTeam: onAddPokemon, onPokemonTapForInfo: onPokemonTapForInfo, onDeletePokemonFromTeam: onDeletePokemonFromTeam,),
 
       );
      /*     Container(

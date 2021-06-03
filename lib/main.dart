@@ -1,15 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:poke_team/pages/home.dart';
 import 'package:poke_team/pages/loading.dart';
-import 'package:poke_team/pages/poke.dart';
+import 'package:poke_team/pages/pokeApp.dart';
+import 'package:poke_team/pages/pokemonPage.dart';
+import 'package:poke_team/pages/teamPage.dart';
+import 'package:poke_team/pages/teamsPage.dart';
 
 void main() {
   runApp(MaterialApp(
     initialRoute: '/',
     routes: {
-      '/': (context) => Home(),
+      '/home': (context) => Home(),
+      '/teams': (context) => TeamsPage(),
+      '/team': (context) => TeamPage(),
       '/loading': (context) => Loading(),
-      '/poke': (context) => Poke(),
+      '/poke': (context) => PokemonPage(),
+      '/': (context) => PokeApp(),
     },
 
   ));

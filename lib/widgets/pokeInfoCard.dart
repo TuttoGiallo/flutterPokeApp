@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:poke_team/model/ability.dart';
 import 'package:poke_team/model/pokemon.dart';
+import 'package:poke_team/model/pokemonInstance.dart';
 import 'package:poke_team/services/pokeCustomTheme.dart';
 import 'package:poke_team/widgets/pokeTypeContainer.dart';
 
@@ -9,17 +10,18 @@ class PokeInfoCard extends StatelessWidget {
   const PokeInfoCard(
       {Key key,
       @required this.addButtonVisibility,
-      @required this.poke,
+      @required this.pokemon,
       @required this.onAddButtonPressed})
       : super(key: key);
-  final Pokemon poke;
+  final PokemonInstance pokemon;
   final bool addButtonVisibility;
-  final Function(BuildContext context, Pokemon pokemon) onAddButtonPressed;
+  final Function(BuildContext context, PokemonInstance pokemon) onAddButtonPressed;
+
 
   @override
   Widget build(BuildContext context) {
     List<Widget> widgetsAbility = [];
-    this.poke.abilities.forEach((ability) {
+    this.pokemon.abilities.forEach((ability) {
       widgetsAbility.add(PokeAbilityInfo(ability: ability));
     });
 
@@ -37,7 +39,7 @@ class PokeInfoCard extends StatelessWidget {
                   radius: 100,
                   backgroundColor: Colors.grey[400],
                   backgroundImage: NetworkImage(
-                    poke.urlSprite,
+                    pokemon.urlSprite,
                   )),
             ),
             SizedBox(
@@ -47,7 +49,7 @@ class PokeInfoCard extends StatelessWidget {
             SizedBox(
               height: 8.0,
             ),
-            Text('${poke.name}', style: PokeCustomTheme.getValueStyle()),
+            Text('${pokemon.name}', style: PokeCustomTheme.getValueStyle()),
             SizedBox(
               height: 34.0,
             ),
@@ -55,11 +57,11 @@ class PokeInfoCard extends StatelessWidget {
             SizedBox(
               height: 8.0,
             ),
-            Text('${poke.id}', style: PokeCustomTheme.getValueStyle()),
+            Text('${pokemon.id}', style: PokeCustomTheme.getValueStyle()),
             SizedBox(
               height: 34.0,
             ),
-            Text(poke.type2 == null ? 'Type' : 'Types',
+            Text(pokemon.type2 == null ? 'Type' : 'Types',
                 style: PokeCustomTheme.getFieldStyle()),
             SizedBox(
               height: 8.0,
@@ -68,11 +70,11 @@ class PokeInfoCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                PokeTypeContainer(poke.type1),
+                PokeTypeContainer(pokemon.type1),
                 SizedBox(height: 5.0),
                 Visibility(
-                  visible: poke.type2 == null ? false : true,
-                  child: PokeTypeContainer(poke.type2),
+                  visible: pokemon.type2 == null ? false : true,
+                  child: PokeTypeContainer(pokemon.type2),
                 ),
               ],
             ),
@@ -95,7 +97,7 @@ class PokeInfoCard extends StatelessWidget {
                 margin: EdgeInsets.all(10),
                 height: 50.0,
                 child: ElevatedButton(
-                  onPressed: () => onAddButtonPressed(context, this.poke),
+                  onPressed: () => onAddButtonPressed(context, this.pokemon), //TODO pokemon instance dettail
                   //TODO: test
                   style: ElevatedButton.styleFrom(
                     primary: Colors.amber,
@@ -115,6 +117,10 @@ class PokeInfoCard extends StatelessWidget {
   }
 }
 
+
+
+
+//TODO spostare in file a parte
 class PokeAbilityInfo extends StatelessWidget {
   const PokeAbilityInfo({Key key, @required this.ability}) : super(key: key);
 

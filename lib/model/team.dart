@@ -1,24 +1,33 @@
 import 'package:poke_team/model/pokemon.dart';
-
-//TODO: usare i provider o comunque non usare una Singleton! singleton da usare sui service piuttosto!
+import 'package:poke_team/model/pokemonInstance.dart';
 
 class Team{
+  String name;
+  int dbKey;
 
-  static final Team _instance = Team._privateConstructor();
-  List <Pokemon> teamMembers = [  ];
+  List <PokemonInstance> teamMembers = [  ];
 
-  //costruttore privato
-  Team._privateConstructor();
+  Team(this.name);
 
-  factory Team(){
-    return _instance;
+  Team.fromMap(this.dbKey, Map<String, dynamic> teamMap) {
+    name = teamMap['name'];
   }
 
-  void addPokemon(Pokemon pokemon){
+  Map<String, dynamic> get map {
+    return {
+      'name': name,
+    };
+  }
+
+  set teamPokemon(List<PokemonInstance> teamPokemon){
+    this.teamMembers = teamPokemon;
+  }
+
+  void addPokemon(PokemonInstance pokemon){
     this.teamMembers.add(pokemon);
   }
 
-  void removePokemon(Pokemon pokemon){
+  void removePokemon(PokemonInstance pokemon){
     this.teamMembers.remove(pokemon);
   }
 
@@ -26,7 +35,16 @@ class Team{
     return teamMembers.length >= 6;
   }
 
+  bool isTeamNotFull(){
+    return teamMembers.length < 6;
+  }
+
+
   bool isTeamEmpty(){
     return teamMembers.length == 0;
   }
+
+
+
+
 }

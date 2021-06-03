@@ -7,9 +7,9 @@ class Pokemon {
   int id;
 
   //usata per identificare più pokemon dello stesso tipo nello stesso team, valorizzata da DB - 0 valore di default
-  int key = -1;
+  int dbKey = -1; //TODO spostare su instance
 
-  bool isStored() => this.key != -1;
+  bool isStored() => this.dbKey != -1;
 
   PokemonType type1;
   PokemonType type2;
@@ -38,7 +38,7 @@ class Pokemon {
     this.type2 = PokemonTypes().getTypeFromName(type2 ?? '');
   }
 
-  Pokemon.fromMap(this.key, Map<String, dynamic> pokemonMap) {
+  Pokemon.fromMap(this.dbKey, Map<String, dynamic> pokemonMap) {
     id = pokemonMap['id'];
     name = pokemonMap['name'];
     type1 = PokemonTypes().getTypeFromName(pokemonMap['type1']);
@@ -46,7 +46,7 @@ class Pokemon {
     urlSprite = pokemonMap['urlSprite'];
   }
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> get map {
     return {
       'id': id,
       'name': name,
