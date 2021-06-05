@@ -3,14 +3,13 @@ import 'package:flutter/material.dart';
 
 class AddAPokemonDialog extends StatelessWidget {
   const AddAPokemonDialog(
-      {Key key, @required this.allPokemonName, @required this.onAddedPokemon})
+      {Key key, @required this.allPokemonName})
       : super(key: key);
   final List<String> allPokemonName;
-  final Function(String pokemonName) onAddedPokemon;
 
   @override
   Widget build(BuildContext context) {
-    String pokemonName = '';
+    TextEditingController textController = new TextEditingController();
     return AlertDialog(
       title: const Text('Add Pokemon in Team:'),
       content: SizedBox(
@@ -18,6 +17,7 @@ class AddAPokemonDialog extends StatelessWidget {
         child:
             //definizione di un widget (del suo nome) nel momento stesso in cui vieni definito nel return.
             AutoCompleteTextField<String>(
+              controller: textController,
                 //TODO cambiare da string name a oggetto pair name/id
                 clearOnSubmit: false,
                 key: key,
@@ -44,7 +44,7 @@ class AddAPokemonDialog extends StatelessWidget {
                   return pokemonName1.compareTo(pokemonName2);
                 },
                 itemSubmitted: (pn) {
-                  pokemonName = pn;
+                  textController.text = pn;
                 },
                 style: TextStyle(
                   fontSize: 28.0,
@@ -54,13 +54,12 @@ class AddAPokemonDialog extends StatelessWidget {
       ),
       actions: <Widget>[
         TextButton(
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => Navigator.pop(context, {'ok': false}),
           child: const Text('Cancel'),
         ),
         TextButton(
           onPressed: () async {
-            await onAddedPokemon(pokemonName);
-            Navigator.pop(context);
+            Navigator.pop(context, {'ok': true, 'pokemonName': textController.text});
           },
           child: const Text('OK'),
         ),

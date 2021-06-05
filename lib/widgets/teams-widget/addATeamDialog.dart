@@ -8,12 +8,11 @@ class AddATeamDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    TextField textField;
     return AlertDialog(
       title: const Text('Add a Team:'),
       content: SizedBox(
         width: 250,
-        child: textField = TextField(
+        child: TextField(
             controller: textController,
             key: key,
             decoration: const InputDecoration(

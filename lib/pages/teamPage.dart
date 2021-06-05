@@ -16,7 +16,6 @@ class TeamPage extends StatefulWidget {
 
 class _TeamPageState extends State<TeamPage> {
   Team team;
-
   LoaderDB loaderDB;
   bool firstLoad =
       true; //TODO: capire perché nell'initState non posso accedere ai valori del ModalRoute...
@@ -35,7 +34,7 @@ class _TeamPageState extends State<TeamPage> {
       'add': 'true',
     });
     if (mapAddedPokemon['ex_code'] == 1) {
-      showDialog<String>(
+      await showDialog<String>(
         context: context,
         builder: (BuildContext context) => AlertDialog(
           title: const Text('Pokemon non trovato'),
@@ -58,14 +57,16 @@ class _TeamPageState extends State<TeamPage> {
     }
   }
 
-  onDeletePokemonFromTeam(PokemonInstance pokemon){
+  onDeletePokemonFromTeam(PokemonInstance pokemon) {
     team.removePokemon(pokemon);
     loaderDB.deletePokemonInTeam(pokemon);
   }
 
   Future<void> onPokemonTapForInfo(PokemonInstance pokemon) async {
-    await Navigator.pushNamed(context, '/loading',
-        arguments: {'pokemonInstance': pokemon, 'add': 'false'}); //TODO quando sarà paremetrizzato non si potrà passare il nome ma si dovrà passare l'intero pokemon
+    await Navigator.pushNamed(context, '/loading', arguments: {
+      'pokemonInstance': pokemon,
+      'add': 'false'
+    }); //TODO quando sarà paremetrizzato non si potrà passare il nome ma si dovrà passare l'intero pokemon
   }
 
   @override
@@ -86,13 +87,15 @@ class _TeamPageState extends State<TeamPage> {
       floatingActionButton: Visibility(
         visible: team.isTeamNotFull(),
         child: FloatingActionButton.extended(
-          onPressed: () {
-            showDialog(
+          onPressed: () async {
+            Map returnFromDialog = await showDialog(
                 context: context,
                 builder: (BuildContext context) => AddAPokemonDialog(
                       allPokemonName: LoadingApi.getAllPokemonName(),
-                      onAddedPokemon: onAddedPokemon,
                     ));
+            if(returnFromDialog['ok']){
+              onAddedPokemon(returnFromDialog['pokemonName']);
+            }
           },
           label: const Text('Add a Pokemon'),
           icon: const Icon(Icons.add),
@@ -120,15 +123,16 @@ class _TeamPageState extends State<TeamPage> {
                         setState(() {
                           onDeletePokemonFromTeam(pokemon);
                         });
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            content: Text('${pokemon.name} delete')));
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('${pokemon.name} delete')));
                       },
                       // Show a red background as the item is swiped away.
                       background: DeleteBackground(),
                       child: Container(
-                        //TODO: spostare il widget "teamPoke"
                         key: ValueKey(pokemon),
-                        child: PokemonListTile(pokemon: pokemon, onPokemonTapForInfo: onPokemonTapForInfo),
+                        child: PokemonListTile(
+                            pokemon: pokemon,
+                            onPokemonTapForInfo: onPokemonTapForInfo),
                       ),
                     ))
                 .toList(),
