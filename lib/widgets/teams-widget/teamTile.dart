@@ -1,8 +1,10 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:poke_team/model/team.dart';
 
 class TeamTile extends StatelessWidget {
-  const TeamTile({Key key, @required this.team, @required this.onTeamTap}) : super(key: key);
+  const TeamTile({Key key, @required this.team, @required this.onTeamTap})
+      : super(key: key);
   final Team team;
   final Future<void> Function(Team team) onTeamTap;
 
@@ -19,20 +21,35 @@ class TeamTile extends StatelessWidget {
         padding: const EdgeInsets.all(3.0),
         child: ListTile(
           dense: true,
-          title: Text('${team.name}', style: TextStyle(fontSize: 24),),
+          title: Text(
+            '${team.name}',
+            style: TextStyle(fontSize: 24),
+          ),
           subtitle: Padding(
             padding: const EdgeInsets.symmetric(vertical: 5.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
-              children: team.teamMembers.map((pokemon) { return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 1.5),
-                child: CircleAvatar(
-                    radius: 25,
-                    backgroundColor: Colors.grey[400],
-                    backgroundImage: NetworkImage(
-                      pokemon.urlSprite,
-                    ),),
-              );}).toList(),
+              children: team.teamMembers.map((pokemon) {
+                return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 1.5),
+                    child: CircleAvatar(
+                        radius: 25,
+                        backgroundColor: Colors.grey[400],
+                        child: CachedNetworkImage(
+                          imageUrl: pokemon.urlSprite,
+                          imageBuilder: (context, imageProvider) => Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              image: DecorationImage(
+                                  image: imageProvider, fit: BoxFit.cover),
+                            ),
+                          ),
+                          placeholder: (context, url) =>
+                              CircularProgressIndicator(),
+                          errorWidget: (context, url, error) =>
+                              Icon(Icons.error),
+                        )));
+              }).toList(),
             ),
           ),
           tileColor: Colors.grey[300],
@@ -41,7 +58,7 @@ class TeamTile extends StatelessWidget {
                 bottomRight: Radius.elliptical(20, 40),
                 topRight: Radius.elliptical(100, 40)),
           ),
-          onTap:  () async => await onTeamTap(team),
+          onTap: () async => await onTeamTap(team),
         ),
       ),
     );

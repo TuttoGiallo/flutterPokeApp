@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:poke_team/model/pokemonInstance.dart';
 import 'package:poke_team/model/team.dart';
 import 'package:poke_team/services/loaderDB.dart';
 import 'package:poke_team/services/loadingApi.dart';
@@ -27,8 +28,6 @@ class _TeamPageState extends State<TeamPage> {
   }
 
   onAddedPokemon(String pokemonNameOrId) async {
-    print('team page: onAddedPokemon $pokemonNameOrId');
-
     dynamic mapAddedPokemon =
         await Navigator.pushNamed(context, '/loading', arguments: {
       'pokemonName': pokemonNameOrId,
@@ -57,6 +56,16 @@ class _TeamPageState extends State<TeamPage> {
         });
       }
     }
+  }
+
+  onDeletePokemonFromTeam(PokemonInstance pokemon){
+    team.removePokemon(pokemon);
+    loaderDB.deletePokemonInTeam(pokemon);
+  }
+
+  Future<void> onPokemonTapForInfo(PokemonInstance pokemon) async {
+    await Navigator.pushNamed(context, '/loading',
+        arguments: {'pokemonInstance': pokemon, 'add': 'false'}); //TODO quando sarà paremetrizzato non si potrà passare il nome ma si dovrà passare l'intero pokemon
   }
 
   @override
@@ -109,7 +118,7 @@ class _TeamPageState extends State<TeamPage> {
                       key: UniqueKey(), //key dupplicata per spostamento e
                       onDismissed: (direction) {
                         setState(() {
-                          //widget.onDeletePokemonFromTeam(pokemon);
+                          onDeletePokemonFromTeam(pokemon);
                         });
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                             content: Text('${pokemon.name} delete')));
@@ -119,7 +128,7 @@ class _TeamPageState extends State<TeamPage> {
                       child: Container(
                         //TODO: spostare il widget "teamPoke"
                         key: ValueKey(pokemon),
-                        child: PokemonListTile(pokemon: pokemon, onPokemonTapForInfo: (pokemon) async => await print(pokemon.name) ),
+                        child: PokemonListTile(pokemon: pokemon, onPokemonTapForInfo: onPokemonTapForInfo),
                       ),
                     ))
                 .toList(),

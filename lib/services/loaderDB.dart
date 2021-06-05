@@ -1,9 +1,7 @@
-import 'dart:convert';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart';
 import 'package:poke_team/model/pokemonInstance.dart';
 import 'package:poke_team/model/team.dart';
-import 'package:poke_team/model/teamV1.dart';
 import 'package:poke_team/model/pokemon.dart';
 import 'package:sembast/sembast.dart';
 import 'package:sembast/sembast_io.dart';
@@ -58,7 +56,7 @@ class LoaderDB {
       teamList.add(Team.fromMap(teamRecord.key, teamRecord.value));
     }
     for (Team team in teamList) {
-      loadAllPokemonFromTeam(team)
+      await loadAllPokemonFromTeam(team)
           .then((pokemonListOfTeam) => team.teamPokemon = pokemonListOfTeam);
     }
     return teamList;
@@ -95,73 +93,41 @@ class LoaderDB {
     return id;
   }
 
-  @deprecated
-  Map<String, dynamic> transformPokemonInDBMap(Pokemon pokemon) {
-    String jsonPokemon = jsonEncode(pokemon);
-    return {
-      pokemon.name: jsonPokemon
-    }; //TODO: cambiare la key di salvataggio per permettere di mettere due pokemon dello stesso tipo nel team
-  }
-
-  @deprecated
-  Future<int> insertPokeInTeam(Pokemon pokemon, Team team) async {
-    if (_db == null) {
-      await init();
-    }
-
-    int id = await storePokemon.add(_db, pokemon.map);
-    return id;
-  }
-
-  @deprecated
-  Future<List<Pokemon>> loadPokemons() async {
-    if (_db == null) {
-      await init();
-    }
-    final finder = Finder(sortOrders: [
-      SortOrder('id'),
-    ]);
-
-    final pokemonsSnapshot = await storePokemon.find(_db, finder: finder);
-    List<Pokemon> pokemons = [];
-    for (RecordSnapshot pokemonRecord in pokemonsSnapshot) {
-      pokemons.add(Pokemon.fromMap(pokemonRecord.key, pokemonRecord.value));
-    }
-    return pokemons;
-  }
-
-  @deprecated
-  Future<void> loadTeam() async {
-    TeamV1 team = TeamV1();
-    team.teamMembers.addAll(await loadPokemons());
-  }
-
-  @deprecated
   Future<void> deletePokemonInTeam(Pokemon pokemon) async {
     final finder = Finder(filter: Filter.byKey(pokemon.dbKey));
     await storePokemon.delete(_db, finder: finder);
   }
 
-  @deprecated //TODO upgrade finder to search in a team! forse con la key non è necessari....
-  Future<Pokemon> readSinglePokemonByKey(int key) async {
-    final finder = Finder(filter: Filter.byKey(key));
-    final recordPokemon = await storePokemon.findFirst(_db, finder: finder);
-    if (recordPokemon == null) {
-      return null;
-    }
-    return Pokemon.fromMap(key, recordPokemon.value);
+  Future<void> deleteTeam(Team team) async {
+    deletePokemonFromTeamDbKey(team.dbKey);
+    final teamFinder = Finder(filter: Filter.byKey(team.dbKey));
+    await storeTeams.delete(_db, finder: teamFinder);
+  }
+
+  Future<void> deletePokemonFromTeamDbKey(int teamDbKey) async {
+    final pokemonFinder = Finder(filter: Filter.equals('teamDbKey', teamDbKey));
+    await storePokemon.delete(_db, finder: pokemonFinder);
   }
 
   Future resetDb() async {
+    if (_db == null) {
+      await init();
+    }
     await storeTeams.delete(_db);
     await storePokemon.delete(_db);
   }
 
   Future resetPokemon() async {
-    await storePokemon.delete(_db); //TODO controllare se funzione
+    if (_db == null) {
+      await init();
+    }
+    await storePokemon.delete(_db);
   }
 
   Future resetTeams() async {
+    if (_db == null) {
+      await init();
+    }
     await storeTeams.delete(_db);
   }
 

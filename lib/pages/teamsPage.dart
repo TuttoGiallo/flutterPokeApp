@@ -67,6 +67,7 @@ class _TeamsPageState extends State<TeamsPage> {
             onDismissed: (direction) {
               setState(() {
                 teams.removeAt(index); //TODO: cancellazione da DB
+                loaderDB.deleteTeam(team);
               });
               ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text('${team.name} deleted')));
@@ -77,6 +78,7 @@ class _TeamsPageState extends State<TeamsPage> {
                 onTeamTap: (Team t) async {
                   await Navigator.pushNamed(context, '/team',
                       arguments: {'team': team});
+                  setState(() {                  });
                 }),
           );
         },

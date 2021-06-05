@@ -59,7 +59,6 @@ class AddAPokemonDialog extends StatelessWidget {
         ),
         TextButton(
           onPressed: () async {
-            print('addPokemonDialog press');
             await onAddedPokemon(pokemonName);
             Navigator.pop(context);
           },

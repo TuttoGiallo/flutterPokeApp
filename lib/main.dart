@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:poke_team/pages/home.dart';
 import 'package:poke_team/pages/loading.dart';
 import 'package:poke_team/pages/pokeApp.dart';
 import 'package:poke_team/pages/pokemonPage.dart';
@@ -10,7 +9,6 @@ void main() {
   runApp(MaterialApp(
     initialRoute: '/',
     routes: {
-      '/home': (context) => Home(),
       '/teams': (context) => TeamsPage(),
       '/team': (context) => TeamPage(),
       '/loading': (context) => Loading(),

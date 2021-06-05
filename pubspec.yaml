@@ -32,6 +32,7 @@ dependencies:
   webview_flutter: ^2.0.8
   autocomplete_textfield: ^1.7.3
   tuple: ^2.0.0
+  cached_network_image: ^3.0.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

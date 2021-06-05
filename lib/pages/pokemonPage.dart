@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:poke_team/model/pokemon.dart';
 import 'package:poke_team/model/pokemonInstance.dart';
-import 'package:poke_team/widgets/pokeBaseStatsCard.dart';
-import 'package:poke_team/widgets/pokeInfoCard.dart';
-import 'package:poke_team/widgets/pokeTypesEffectCard.dart';
-import 'package:webview_flutter/webview_flutter.dart';
+import 'package:poke_team/widgets/pokemon-widget/pokeBaseStatsCard.dart';
+import 'package:poke_team/widgets/pokemon-widget/pokeInfoCard.dart';
+import 'package:poke_team/widgets/pokemon-widget/pokeTypesEffectCard.dart';
 
 class PokemonPage extends StatefulWidget {
   @override

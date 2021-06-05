@@ -5,7 +5,7 @@ import 'package:poke_team/model/pokemonType.dart';
 import 'package:poke_team/model/pokemonTypes.dart';
 import 'package:poke_team/model/wrinDamage.dart';
 import 'package:poke_team/services/pokeCustomTheme.dart';
-import 'package:poke_team/widgets/pokeTypeContainer.dart';
+import 'package:poke_team/widgets/pokemon-widget/pokeTypeContainer.dart';
 //TODO: import cartella intera
 
 class PokeTypeXFactorList extends StatelessWidget {

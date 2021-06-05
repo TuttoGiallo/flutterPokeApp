@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:poke_team/model/pokemon.dart';
 import 'package:poke_team/model/wrinDamage.dart';
 import 'package:poke_team/services/pokeCustomTheme.dart';
-import 'package:poke_team/widgets/pokeTypeXFactorList.dart';
+import 'package:poke_team/widgets/pokemon-widget/pokeTypeXFactorList.dart';
 
 class PokeTypesEffectCard extends StatelessWidget {
   const PokeTypesEffectCard({Key key, @required this.poke}) : super(key: key);

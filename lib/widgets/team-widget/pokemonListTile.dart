@@ -1,5 +1,8 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:poke_team/model/pokemonInstance.dart';
+
+
 
 class PokemonListTile extends StatelessWidget {
   const PokemonListTile(
@@ -35,8 +38,19 @@ class PokemonListTile extends StatelessWidget {
               child: CircleAvatar(
                   radius: 25,
                   backgroundColor: Colors.grey[400],
-                  backgroundImage: NetworkImage(
-                    pokemon.urlSprite,
+                  child: CachedNetworkImage(
+                    imageUrl: pokemon.urlSprite,
+                    imageBuilder: (context, imageProvider) => Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        image: DecorationImage(
+                            image: imageProvider, fit: BoxFit.cover),
+                      ),
+                    ),
+                    placeholder: (context, url) =>
+                        CircularProgressIndicator(),
+                    errorWidget: (context, url, error) =>
+                        Icon(Icons.error),
                   )),
             ),
           ),

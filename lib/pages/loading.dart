@@ -13,18 +13,37 @@ class Loading extends StatefulWidget {
 }
 
 class _LoadingState extends State<Loading> {
+
+//TODO stampare il nome del pokemon in caricamento
+
   static Future<Map> safeApiCall(String pokeName) async {
     Map returnMap = new Map();
     try {
       PokeApi pAPI = new PokeApi();
       returnMap['pokemon'] = await pAPI.loadByName(pokeName);
     } catch (ex) {
-      print('loading.dart: exception print -> ${ex.toString()}');
       returnMap['pokemon'] = null;
       returnMap['ex_code'] = 1;
     }
     returnMap['ex_code'] = 0;
     return returnMap;
+  }
+
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance
+        .addPostFrameCallback((_) => postBuildNavigatorLoadAndPush(context));
+  }
+
+  //per evitare di pushare un nuovo widget mentre questo sta ancora buildando, cosa che genera errore,
+  // mi iscrivo a una call back sull'after build.
+  void postBuildNavigatorLoadAndPush(BuildContext context){
+    Map input = ModalRoute.of(context).settings.arguments;
+       if (input['add'] == 'true') {
+         addPokemonByName(input['pokemonName'], input['team']);
+       } else {
+         loadPokemonFromApi(input['pokemonInstance']);
+       }
   }
 
   void loadPokemonFromApi(PokemonInstance pokemonInstance) async {
@@ -52,13 +71,6 @@ class _LoadingState extends State<Loading> {
 
   @override
   Widget build(BuildContext context) {
-    Map input = ModalRoute.of(context).settings.arguments;
-
-    if (input['add'] == 'true') {
-      addPokemonByName(input['pokemonName'], input['team']);
-    } else {
-      loadPokemonFromApi(input['pokemonInstance']);
-    }
 
     return Scaffold(
       backgroundColor: Colors.amber,

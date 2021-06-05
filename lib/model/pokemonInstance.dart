@@ -28,6 +28,7 @@ class PokemonInstance extends Pokemon {
   }
 
   Map<String, dynamic> get map {
+    print(baseStats[BaseStatName.hp]);
     Map<String, dynamic> returnMap = super.map;
     returnMap.addAll({'firstName': this.firstName, 'teamDbKey': team.dbKey});
     return returnMap;

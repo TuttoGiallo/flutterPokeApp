@@ -1,4 +1,3 @@
-import 'package:poke_team/model/pokemon.dart';
 import 'package:poke_team/model/pokemonInstance.dart';
 
 class Team{

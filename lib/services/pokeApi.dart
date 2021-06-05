@@ -53,7 +53,6 @@ class PokeApi {
 
     poke.urlSprite = pokeResp['sprites']['front_default'];
 
-    print(pokeResp['abilities']);
     for (dynamic ability in pokeResp['abilities']) {
 
       var urlAbilityDetails = Uri.parse(ability['ability']['url']);

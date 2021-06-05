@@ -1,10 +1,10 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:poke_team/model/ability.dart';
-import 'package:poke_team/model/pokemon.dart';
 import 'package:poke_team/model/pokemonInstance.dart';
 import 'package:poke_team/services/pokeCustomTheme.dart';
-import 'package:poke_team/widgets/pokeTypeContainer.dart';
+import 'package:poke_team/widgets/pokemon-widget/pokeTypeContainer.dart';
 
 class PokeInfoCard extends StatelessWidget {
   const PokeInfoCard(
@@ -38,8 +38,19 @@ class PokeInfoCard extends StatelessWidget {
               child: CircleAvatar(
                   radius: 100,
                   backgroundColor: Colors.grey[400],
-                  backgroundImage: NetworkImage(
-                    pokemon.urlSprite,
+                  child: CachedNetworkImage(
+                    imageUrl: pokemon.urlSprite,
+                    imageBuilder: (context, imageProvider) => Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        image: DecorationImage(
+                            image: imageProvider, fit: BoxFit.cover),
+                      ),
+                    ),
+                    placeholder: (context, url) =>
+                        CircularProgressIndicator(),
+                    errorWidget: (context, url, error) =>
+                        Icon(Icons.error),
                   )),
             ),
             SizedBox(
