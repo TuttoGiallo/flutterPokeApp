@@ -4,27 +4,48 @@ import 'package:poke_team/model/pokemonType.dart';
 import 'package:poke_team/services/typeColors.dart';
 
 class PokeTypeContainer extends StatelessWidget {
-  const PokeTypeContainer(this.type, {Key key}) : super(key: key);
+  const PokeTypeContainer(this.type,
+      {Key key, this.alternativeStringPrint, this.fixWidth = -1})
+      : super(key: key);
   final PokemonType type;
+  final String alternativeStringPrint;
+  final double fixWidth;
+
+
+  Container containerWithWidth(Widget child) {
+
+    BoxDecoration boxDecoration = BoxDecoration(
+      color: TypeColors.getTypeColor(type.name),
+      border: Border.all(
+        color: Colors.black,
+        width: 2,
+      ),
+      borderRadius: BorderRadius.circular(8),
+    );
+
+    Container containerWithWidth;
+    fixWidth == -1 ? containerWithWidth =
+        Container(
+      decoration: boxDecoration,
+      child: child,
+    ) : containerWithWidth = Container(
+      width: fixWidth,
+      decoration: boxDecoration,
+      child: child,
+    );
+    return containerWithWidth;
+  }
 
   @override
   Widget build(BuildContext context) {
     if (type == null) return Container();
-    return Container(
-      decoration: BoxDecoration(
-        color: TypeColors.getTypeColor(type.name),
-        border: Border.all(
-          color: Colors.black,
-          width: 2,
-        ),
-        borderRadius: BorderRadius.circular(2),
-      ),
-      child: Center(
+    return containerWithWidth(
+      Center(
         child: Stack(
           children: <Widget>[
             // Stroked text as border.
             Text(
-              type.name,
+              alternativeStringPrint ?? type.name,
               style: TextStyle(
                 fontSize: 20,
                 foreground: Paint()
@@ -36,7 +57,7 @@ class PokeTypeContainer extends StatelessWidget {
             ),
             // Solid text as fill.
             Text(
-              type.name,
+              alternativeStringPrint ?? type.name,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 20,

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:poke_team/model/ability.dart';
 import 'package:poke_team/model/pokemonInstance.dart';
 import 'package:poke_team/services/pokeCustomTheme.dart';
-import 'package:poke_team/widgets/pokemon-widget/pokeTypeContainer.dart';
+import 'package:poke_team/widgets/pokeTypeContainer.dart';
 
 class PokeInfoCard extends StatelessWidget {
   const PokeInfoCard(

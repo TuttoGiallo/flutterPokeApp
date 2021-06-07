@@ -18,11 +18,11 @@ class AddAPokemonDialog extends StatelessWidget {
             //definizione di un widget (del suo nome) nel momento stesso in cui vieni definito nel return.
             AutoCompleteTextField<String>(
               controller: textController,
-                //TODO cambiare da string name a oggetto pair name/id
+                //TODO cambiare da string name a oggetto pair name/id così da visualizzarlo nel boxino di hint
                 clearOnSubmit: false,
                 key: key,
                 decoration: const InputDecoration(
-                    helperText: "Enter Pokemon name or IDß"),
+                    helperText: "Enter Pokemon name or ID"),
                 suggestions: allPokemonName,
                 itemBuilder: (context, pokemonName) {
                   return Container(
@@ -34,11 +34,10 @@ class AddAPokemonDialog extends StatelessWidget {
                         style: TextStyle(fontSize: 20, color: Colors.grey[300]),
                       ),
                     ),
-                  ); //TODO: presentare il nome e l'id nella ricerca
+                  );
                 },
                 itemFilter: (pokemonName, inputText) {
-                  //TODO: cambiare in coppia name,id. ricorda
-                  return pokemonName.contains(inputText);
+                  return pokemonName.toUpperCase().contains(inputText.toUpperCase());
                 },
                 itemSorter: (pokemonName1, pokemonName2) {
                   return pokemonName1.compareTo(pokemonName2);

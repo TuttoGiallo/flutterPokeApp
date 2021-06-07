@@ -7,9 +7,9 @@ class PokemonTypes {
   static final PokemonTypes _instance = PokemonTypes._privateConstructor();
 
   PokemonTypes._privateConstructor() {
-    populateWeakness();
-    populateImmunity();
-    populateResistance();
+    _populateWeakness();
+    _populateImmunity();
+    _populateResistance();
     return;
   }
 
@@ -85,7 +85,7 @@ class PokemonTypes {
     return _typesNameMap[name];
   }
 
-  void populateWeakness() {
+  void _populateWeakness() {
     normal.weakness.add(fighting);
     fighting.weakness.addAll([flying, psychic, fairy]);
     flying.weakness.addAll([rock, electric, ice]);
@@ -106,7 +106,7 @@ class PokemonTypes {
     fairy.weakness.addAll([steel, poison]);
   }
 
-  void populateResistance() {
+  void _populateResistance() {
     fighting.resistance.addAll([rock, bug, dark]);
     flying.resistance.addAll([grass, fighting, bug]);
     poison.resistance.addAll([fighting, poison, bug, grass, fairy]);
@@ -138,7 +138,7 @@ class PokemonTypes {
     fairy.resistance.addAll([dark, fighting, bug]);
   }
 
-  void populateImmunity() {
+  void _populateImmunity() {
     normal.immunity.add(ghost);
     flying.immunity.add(ground);
     ground.immunity.add(electric);

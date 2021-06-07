@@ -22,6 +22,7 @@ class TypeColors{
     'fighting':   Color(0xFFA53018),
     'ice'     :   Colors.cyanAccent,
     'steel'   :   Color(0xB8B8D0FF),
+    'null'    :   Colors.white,
   };
 
   static Color getTypeColor(String type){

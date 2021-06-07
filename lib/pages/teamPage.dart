@@ -6,6 +6,7 @@ import 'package:poke_team/services/loadingApi.dart';
 import 'package:poke_team/widgets/deleteBackGround.dart';
 import 'package:poke_team/widgets/team-widget/addAPokemonDialog.dart';
 import 'package:poke_team/widgets/team-widget/pokemonListTile.dart';
+import 'package:poke_team/widgets/team-widget/teamCoverage.dart';
 
 class TeamPage extends StatefulWidget {
   const TeamPage({Key key}) : super(key: key);
@@ -19,6 +20,14 @@ class _TeamPageState extends State<TeamPage> {
   LoaderDB loaderDB;
   bool firstLoad =
       true; //TODO: capire perché nell'initState non posso accedere ai valori del ModalRoute...
+
+  String _selectedItem = 'Pokemon';
+  final Map<String, int> _menuStringIndex = {
+    'Pokemon': 0,
+    'Coverages': 1,
+    'Stats': 2,
+    'Editing': 3,
+  };
 
   @override
   void initState() {
@@ -80,12 +89,41 @@ class _TeamPageState extends State<TeamPage> {
     return Scaffold(
       backgroundColor: Colors.grey[800],
       appBar: AppBar(
-        title: Text(team.name),
+        title: Text('${team.name} - $_selectedItem'),
         centerTitle: true,
         backgroundColor: Colors.amber,
+        actions: [
+          PopupMenuButton(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(15.0))),
+            iconSize: 35,
+            color: Colors.grey[800],
+            itemBuilder: (BuildContext bc) {
+              return _menuStringIndex.keys
+                  .map((teamOption) => PopupMenuItem(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 15.0, horizontal: 20),
+                        child: Text(teamOption),
+                        value: teamOption,
+                        textStyle: TextStyle(
+                          color: teamOption != _selectedItem
+                              ? Colors.grey[300]
+                              : Colors.amber,
+                          fontSize: 20,
+                        ),
+                      ))
+                  .toList();
+            },
+            onSelected: (value) {
+              setState(() {
+                _selectedItem = value;
+              });
+            },
+          ),
+        ],
       ),
       floatingActionButton: Visibility(
-        visible: team.isTeamNotFull(),
+        visible: team.isTeamNotFull() && _selectedItem == 'Pokemon',
         child: FloatingActionButton.extended(
           onPressed: () async {
             Map returnFromDialog = await showDialog(
@@ -93,7 +131,7 @@ class _TeamPageState extends State<TeamPage> {
                 builder: (BuildContext context) => AddAPokemonDialog(
                       allPokemonName: LoadingApi.getAllPokemonName(),
                     ));
-            if(returnFromDialog['ok']){
+            if (returnFromDialog['ok']) {
               onAddedPokemon(returnFromDialog['pokemonName']);
             }
           },
@@ -102,20 +140,8 @@ class _TeamPageState extends State<TeamPage> {
           backgroundColor: Colors.amber,
         ),
       ),
-      body: Container(
-        child: ReorderableListView(
-            header: Container(
-                padding: const EdgeInsets.all(25),
-                color: Colors.amber[300],
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Pokemon:',
-                      style: TextStyle(fontSize: 20, color: Colors.grey[800]),
-                    ),
-                  ],
-                )),
+      body: IndexedStack(index: _menuStringIndex[_selectedItem], children: [
+        ReorderableListView(
             children: team.teamMembers
                 .map((pokemon) => Dismissible(
                       key: UniqueKey(), //key dupplicata per spostamento e
@@ -146,7 +172,10 @@ class _TeamPageState extends State<TeamPage> {
                 team.teamMembers..insert(newIndex, poke);
               });
             }),
-      ),
+        TeamCoverage(team:team),
+        Text('Stats'),
+        Text('Editing'),
+      ]),
     );
   }
 }
