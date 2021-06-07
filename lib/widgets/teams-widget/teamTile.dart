@@ -3,10 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:poke_team/model/team.dart';
 
 class TeamTile extends StatelessWidget {
-  const TeamTile({Key key, @required this.team, @required this.onTeamTap})
+  const TeamTile({Key key, @required this.team, @required this.onTeamTap, @required this.onTeamLongPress})
       : super(key: key);
   final Team team;
   final Future<void> Function(Team team) onTeamTap;
+  final Future<void> Function(Team team) onTeamLongPress;
 
   @override
   Widget build(BuildContext context) {
@@ -59,6 +60,7 @@ class TeamTile extends StatelessWidget {
                 topRight: Radius.elliptical(100, 40)),
           ),
           onTap: () async => await onTeamTap(team),
+          onLongPress: () async => await onTeamLongPress(team),
         ),
       ),
     );

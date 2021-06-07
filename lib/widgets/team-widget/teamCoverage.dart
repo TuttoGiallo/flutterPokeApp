@@ -43,7 +43,6 @@ class TeamCoverage extends StatelessWidget {
   }
 
 
-
   @override
   Widget build(BuildContext context) {
     List<PokemonType> allTypes = PokemonTypes().getAllTypes();

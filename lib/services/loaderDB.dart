@@ -21,9 +21,9 @@ class LoaderDB {
   Database _db;
 
   //TABELLA TEAM: associazione key - Map che rappresenta i valori storati.
-  final storePokemon = intMapStoreFactory
+  final _storePokemon = intMapStoreFactory
       .store('pokemon'); //il pokemon punta al team al quale è associato.
-  final storeTeams = intMapStoreFactory
+  final _storeTeams = intMapStoreFactory
       .store('teams'); //TODO: valutare univocità forzata nomi team
 
   Future<Database> init() async {
@@ -50,7 +50,7 @@ class LoaderDB {
     final finder = Finder(sortOrders: [
       SortOrder('name'),
     ]);
-    final teamsSnapshot = await storeTeams.find(_db, finder: finder);
+    final teamsSnapshot = await _storeTeams.find(_db, finder: finder);
     List<Team> teamList = [];
     for (RecordSnapshot teamRecord in teamsSnapshot) {
       teamList.add(Team.fromMap(teamRecord.key, teamRecord.value));
@@ -67,7 +67,7 @@ class LoaderDB {
       await init();
     }
     final finder = Finder(filter: Filter.equals('teamDbKey', team.dbKey));
-    final pokemonSnapshot = await storePokemon.find(_db, finder: finder);
+    final pokemonSnapshot = await _storePokemon.find(_db, finder: finder);
     List<PokemonInstance> pokemonList = [];
     for (RecordSnapshot pokemonRecord in pokemonSnapshot) {
       pokemonList.add(PokemonInstance.fromMap(pokemonRecord.key, pokemonRecord.value, team));
@@ -80,8 +80,9 @@ class LoaderDB {
     if (_db == null) {
       await init();
     }
-    int id = await storeTeams.add(_db, team.map);
+    int id = await _storeTeams.add(_db, team.map);
     team.dbKey = id;
+    print('loaderDB store new team: $id');
     return id;
   }
 
@@ -89,47 +90,54 @@ class LoaderDB {
     if (_db == null) {
       await init();
     }
-    int id = await storePokemon.add(_db, pokemon.map);
+    int id = await _storePokemon.add(_db, pokemon.map);
     return id;
   }
 
   Future<void> deletePokemonInTeam(Pokemon pokemon) async {
     final finder = Finder(filter: Filter.byKey(pokemon.dbKey));
-    await storePokemon.delete(_db, finder: finder);
+    await _storePokemon.delete(_db, finder: finder);
   }
 
   Future<void> deleteTeam(Team team) async {
     deletePokemonFromTeamDbKey(team.dbKey);
     final teamFinder = Finder(filter: Filter.byKey(team.dbKey));
-    await storeTeams.delete(_db, finder: teamFinder);
+    await _storeTeams.delete(_db, finder: teamFinder);
   }
 
   Future<void> deletePokemonFromTeamDbKey(int teamDbKey) async {
     final pokemonFinder = Finder(filter: Filter.equals('teamDbKey', teamDbKey));
-    await storePokemon.delete(_db, finder: pokemonFinder);
+    await _storePokemon.delete(_db, finder: pokemonFinder);
+  }
+
+  Future renameTeam(Team team) async {
+      await _storeTeams.record(team.dbKey).put(_db, team.map);
   }
 
   Future resetDb() async {
     if (_db == null) {
       await init();
     }
-    await storeTeams.delete(_db);
-    await storePokemon.delete(_db);
+    await _storeTeams.delete(_db);
+    await _storePokemon.delete(_db);
   }
 
   Future resetPokemon() async {
     if (_db == null) {
       await init();
     }
-    await storePokemon.delete(_db);
+    await _storePokemon.delete(_db);
   }
 
   Future resetTeams() async {
     if (_db == null) {
       await init();
     }
-    await storeTeams.delete(_db);
+    await _storeTeams.delete(_db);
   }
+
+
+
 
 //TODO update quando i pokemon saranno parametrizzati...
 }

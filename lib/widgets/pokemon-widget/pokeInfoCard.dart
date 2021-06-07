@@ -146,7 +146,7 @@ class PokeAbilityInfo extends StatelessWidget {
         Text(ability.name, style: PokeCustomTheme.getValueStyle()),
         Visibility(
             visible: ability.hidden,
-            child: Text('(hidden)',
+            child: Text('(H)',
                 style: TextStyle(fontSize: 18, color: Colors.grey[300]))),
         IconButton(
           color: Colors.grey[300],
