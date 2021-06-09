@@ -1,4 +1,6 @@
+import 'package:poke_team/model/ability.dart';
 import 'package:poke_team/model/pokemon.dart';
+import 'package:poke_team/model/pokemonInstance.dart';
 import 'package:poke_team/model/pokemonType.dart';
 import 'package:poke_team/model/wrinDamage.dart';
 
@@ -148,7 +150,7 @@ class PokemonTypes {
   }
 
   //creazione della mappa<tipo-fattore> del danno ricevuto da un Pokemon
-  Map<PokemonType, double> getTypeEffectsPokemon(Pokemon pokemon) {
+  Map<PokemonType, double> getTypeEffectsPokemon(PokemonInstance pokemon) {
     Map<PokemonType, double> pokemonTypeEffect = {};
     getAllTypes().forEach((type) {
       pokemonTypeEffect[type] = 1;
@@ -177,44 +179,77 @@ class PokemonTypes {
     return pokemonTypeEffect;
   }
 
+  //creazione della mappa<tipo-fattore> del danno ricevuto da un Pokemon
+  Map<PokemonType, double> getTypeEffectsPokemonWithAbility(
+      PokemonInstance pokemon) {
+    Map<PokemonType, double> pokemonTypeEffect = getTypeEffectsPokemon(pokemon);
+
+    pokemonTypeEffect.keys.forEach((keyType) {
+      double abilityModifier = Ability.abilityDamageModficatorOnType(
+          pokemon.abilitySelected, keyType);
+      pokemonTypeEffect[keyType] *= abilityModifier;
+    });
+
+    return pokemonTypeEffect;
+  }
+
   //creazione della mappa<tipo-fattore> delle debolezze di un Pokemon
-  Map<PokemonType, double> getTypeWeaknessPokemon(Pokemon pokemon) {
-    return getFilteredSortedTypePokemonEffect(pokemon, WeaknessResistanceImmunityNormalDamage.weakness);
+  Map<PokemonType, double> getTypeWeaknessPokemon(PokemonInstance pokemon,
+      {bool withAbility = false}) {
+    return getFilteredSortedTypePokemonEffect(
+        pokemon, WeaknessResistanceImmunityNormalDamage.weakness,
+        withAbility: withAbility);
   }
 
   //creazione della mappa<tipo-fattore> del resistenze di un Pokemon
-  Map<PokemonType, double> getTypeResistencePokemon(Pokemon pokemon) {
-    return getFilteredSortedTypePokemonEffect(pokemon, WeaknessResistanceImmunityNormalDamage.resistance);
+  Map<PokemonType, double> getTypeResistencePokemon(PokemonInstance pokemon,
+      {bool withAbility = false}) {
+    return getFilteredSortedTypePokemonEffect(
+        pokemon, WeaknessResistanceImmunityNormalDamage.resistance,
+        withAbility: withAbility);
   }
 
   //creazione della mappa<tipo-fattore> del immunità di un Pokemon
-  Map<PokemonType, double> getTypeImmunityPokemon(Pokemon pokemon) {
-    return getFilteredSortedTypePokemonEffect(pokemon, WeaknessResistanceImmunityNormalDamage.immunity);
+  Map<PokemonType, double> getTypeImmunityPokemon(PokemonInstance pokemon,
+      {bool withAbility = false}) {
+    return getFilteredSortedTypePokemonEffect(
+        pokemon, WeaknessResistanceImmunityNormalDamage.immunity,
+        withAbility: withAbility);
   }
 
   //creazione della mappa<tipo-fattore> del danno normale di un Pokemon
-  Map<PokemonType, double> getTypeNormalDamagePokemon(Pokemon pokemon) {
-    return getFilteredSortedTypePokemonEffect(pokemon, WeaknessResistanceImmunityNormalDamage.normal);
+  Map<PokemonType, double> getTypeNormalDamagePokemon(PokemonInstance pokemon,
+      {bool withAbility = false}) {
+    return getFilteredSortedTypePokemonEffect(
+        pokemon, WeaknessResistanceImmunityNormalDamage.normal,
+        withAbility: withAbility);
   }
 
   //creazione della mappa<tipo-fattore> gli effetti di un Pokemon
-  Map<PokemonType, double> getFilteredSortedTypePokemonEffect(Pokemon pokemon, WeaknessResistanceImmunityNormalDamage wrind) {
-    Map<PokemonType, double> typeEffectsPokemon =
-    getTypeEffectsPokemon(pokemon);
+  Map<PokemonType, double> getFilteredSortedTypePokemonEffect(
+      PokemonInstance pokemon, WeaknessResistanceImmunityNormalDamage wrind,
+      {bool withAbility = false}) {
+    Map<PokemonType, double> typeEffectsPokemon = withAbility
+        ? getTypeEffectsPokemonWithAbility(pokemon)
+        : getTypeEffectsPokemon(pokemon);
     List<MapEntry<PokemonType, double>> pokemonSortTypesEffect = [];
     getAllTypes().forEach((type) {
       double factor = typeEffectsPokemon[type];
-      if (factor > 1 && wrind==WeaknessResistanceImmunityNormalDamage.weakness ||
-          0 < factor && factor < 1  && wrind==WeaknessResistanceImmunityNormalDamage.resistance ||
-          factor == 0 && wrind==WeaknessResistanceImmunityNormalDamage.immunity ||
-          factor == 1 && wrind==WeaknessResistanceImmunityNormalDamage.normal)
+      if (factor > 1 &&
+              wrind == WeaknessResistanceImmunityNormalDamage.weakness ||
+          0 < factor &&
+              factor < 1 &&
+              wrind == WeaknessResistanceImmunityNormalDamage.resistance ||
+          factor == 0 &&
+              wrind == WeaknessResistanceImmunityNormalDamage.immunity ||
+          factor == 1 && wrind == WeaknessResistanceImmunityNormalDamage.normal)
         pokemonSortTypesEffect.add(MapEntry(type, typeEffectsPokemon[type]));
     });
-    pokemonSortTypesEffect.sort((a,  b) => (b.value*10 - a.value*10).toInt());
+    pokemonSortTypesEffect
+        .sort((a, b) => (b.value * 10 - a.value * 10).toInt());
     return Map.fromIterable(pokemonSortTypesEffect,
         key: (entryList) => entryList.key,
         value: (entryValue) => entryValue.value);
-  }//vabbeh, mega bordello per ritornare una mappa ordinata...
-
+  } //vabbeh, mega bordello per ritornare una mappa ordinata...
 
 }

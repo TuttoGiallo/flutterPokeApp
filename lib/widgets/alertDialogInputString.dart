@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 
-class AddATeamDialog extends StatelessWidget {
-  AddATeamDialog({Key key, @required this.onAddedTeam}) : super(key: key);
+class AlertDialogInputString extends StatelessWidget {
+  AlertDialogInputString({Key key, @required this.title, this.helpText = ''}) : super(key: key);
 
-  final Function(String teamName) onAddedTeam;
   final TextEditingController textController = new TextEditingController();
+  final String title;
+  final String helpText;
 
   @override
   Widget build(BuildContext context) {
@@ -25,13 +26,12 @@ class AddATeamDialog extends StatelessWidget {
       ),
       actions: <Widget>[
         TextButton(
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => Navigator.pop(context, {'ok': false}),
           child: const Text('Cancel'),
         ),
         TextButton(
-          onPressed: () {
-            onAddedTeam(textController.text);
-            Navigator.pop(context);
+          onPressed: () async {
+            Navigator.pop(context, {'ok': true, 'inputText': textController.text});
           },
           child: const Text('OK'),
         ),

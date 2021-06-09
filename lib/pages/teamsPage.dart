@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:poke_team/model/pokemonInstance.dart';
 import 'package:poke_team/model/team.dart';
 import 'package:poke_team/services/loaderDB.dart';
+import 'package:poke_team/widgets/alertDialogInputString.dart';
 import 'package:poke_team/widgets/deleteBackGround.dart';
-import 'package:poke_team/widgets/teams-widget/addATeamDialog.dart';
 import 'package:poke_team/widgets/teams-widget/teamTile.dart';
 
 class TeamsPage extends StatefulWidget {
@@ -40,11 +40,14 @@ class _TeamsPageState extends State<TeamsPage> {
     loaderDB.renameTeam(team);
   }
 
-  onCloneTeam(Team team) async { //TODO await this, altrimenti rischio di non avere la chiave DB corretta, spinner sul dialog?!
+  onCloneTeam(Team team) async {
+    //TODO await this, altrimenti rischio di non avere la chiave DB corretta, spinner sul dialog?!
     Team newTeam = new Team.fromMap(-1, team.map);
-    await loaderDB.storeNewTeam(newTeam);//TODO comportamento differente store team e pokemon
-    for(PokemonInstance pokemon in team.teamMembers){
-      PokemonInstance newPokemon = new PokemonInstance.fromMap(newTeam.dbKey, pokemon.map, newTeam);
+    await loaderDB.storeNewTeam(
+        newTeam); //TODO comportamento differente store team e pokemon
+    for (PokemonInstance pokemon in team.teamMembers) {
+      PokemonInstance newPokemon =
+          new PokemonInstance.fromMap(newTeam.dbKey, pokemon.map, newTeam);
       int pokeDbKey = await loaderDB.storePokemonInstanceInTeam(newPokemon);
       newPokemon.dbKey = pokeDbKey;
       newTeam.addPokemon(newPokemon);
@@ -71,11 +74,16 @@ class _TeamsPageState extends State<TeamsPage> {
         automaticallyImplyLeading: false, //disable back arrow
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          showDialog(
+        onPressed: () async {
+          Map returnFromDialog = await showDialog(
               context: context,
-              builder: (BuildContext context) =>
-                  AddATeamDialog(onAddedTeam: onAddedTeam));
+              builder: (BuildContext context) => AlertDialogInputString(
+                    title: 'Add a Team:',
+                    helpText: 'Enter the name of the new team',
+                  ));
+          if (returnFromDialog != null && returnFromDialog['ok']) {
+            onAddedTeam(returnFromDialog['inputText']);
+          }
         },
         label: const Text('Add a new Team!'),
         icon: const Icon(Icons.add),
@@ -107,7 +115,11 @@ class _TeamsPageState extends State<TeamsPage> {
                 await showDialog(
                     context: context,
                     builder: (BuildContext context) {
-                      return OnPressTeamMenu(team: team, onRenamedTeam: onRenamedTeam, onCloneTeam: onCloneTeam,);
+                      return OnPressTeamMenu(
+                        team: team,
+                        onRenamedTeam: onRenamedTeam,
+                        onCloneTeam: onCloneTeam,
+                      );
                     });
               },
             ),
@@ -120,7 +132,10 @@ class _TeamsPageState extends State<TeamsPage> {
 
 class OnPressTeamMenu extends StatelessWidget {
   const OnPressTeamMenu(
-      {Key key, @required this.team, @required this.onRenamedTeam, @required this.onCloneTeam})
+      {Key key,
+      @required this.team,
+      @required this.onRenamedTeam,
+      @required this.onCloneTeam})
       : super(key: key);
   final Team team;
   final Function(Team team, String name) onRenamedTeam;
@@ -139,7 +154,8 @@ class OnPressTeamMenu extends StatelessWidget {
             await showDialog(
                 context: context,
                 builder: (BuildContext context) {
-                  return RenameATeamDialog(team: team, onRenamedTeam: onRenamedTeam);
+                  return RenameATeamDialog(
+                      team: team, onRenamedTeam: onRenamedTeam);
                 });
             Navigator.pop(context, 'rename');
           },
@@ -188,7 +204,9 @@ class OnPressTeamMenuItem extends StatelessWidget {
 }
 
 class RenameATeamDialog extends StatelessWidget {
-  RenameATeamDialog({Key key, @required this.onRenamedTeam, @required this.team}) : super(key: key);
+  RenameATeamDialog(
+      {Key key, @required this.onRenamedTeam, @required this.team})
+      : super(key: key);
 
   final Function(Team team, String teamName) onRenamedTeam;
   final TextEditingController textController = new TextEditingController();

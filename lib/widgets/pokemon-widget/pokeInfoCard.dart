@@ -6,23 +6,47 @@ import 'package:poke_team/model/pokemonInstance.dart';
 import 'package:poke_team/services/pokeCustomTheme.dart';
 import 'package:poke_team/widgets/pokeTypeContainer.dart';
 
-class PokeInfoCard extends StatelessWidget {
+import '../alertDialogInputString.dart';
+
+class PokeInfoCard extends StatefulWidget {
   const PokeInfoCard(
       {Key key,
-      @required this.addButtonVisibility,
+      @required this.editing,
       @required this.pokemon,
-      @required this.onAddButtonPressed})
+      @required this.onAddButtonPressed,
+      @required this.onUpdatePokemonValues})
       : super(key: key);
   final PokemonInstance pokemon;
-  final bool addButtonVisibility;
-  final Function(BuildContext context, PokemonInstance pokemon) onAddButtonPressed;
+  final bool editing;
+  final Function(BuildContext context, PokemonInstance pokemon)
+      onAddButtonPressed;
+  final Function(PokemonInstance pokemonInstance) onUpdatePokemonValues;
 
+  @override
+  _PokeInfoCardState createState() => _PokeInfoCardState();
+}
+
+class _PokeInfoCardState extends State<PokeInfoCard> {
+  PokemonInstance pokemonInstance;
+  Ability selectedAbility;
+
+  @override
+  void initState() {
+    pokemonInstance = widget.pokemon;
+    selectedAbility = this.widget.pokemon.abilities.firstWhere((ability) => pokemonInstance.abilitySelected.name == ability.name);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     List<Widget> widgetsAbility = [];
-    this.pokemon.abilities.forEach((ability) {
+    this.widget.pokemon.abilities.forEach((ability) {
       widgetsAbility.add(PokeAbilityInfo(ability: ability));
+    });
+
+    List<DropdownMenuItem<Ability>> dropDownAbility = [];
+    this.widget.pokemon.abilities.forEach((ability) {
+      dropDownAbility.add(DropdownMenuItem<Ability>(value: ability, child: PokeAbilityInfo(ability: ability)));
     });
 
     return SingleChildScrollView(
@@ -39,7 +63,7 @@ class PokeInfoCard extends StatelessWidget {
                   radius: 100,
                   backgroundColor: Colors.grey[400],
                   child: CachedNetworkImage(
-                    imageUrl: pokemon.urlSprite,
+                    imageUrl: widget.pokemon.urlSprite,
                     imageBuilder: (context, imageProvider) => Container(
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
@@ -47,10 +71,8 @@ class PokeInfoCard extends StatelessWidget {
                             image: imageProvider, fit: BoxFit.cover),
                       ),
                     ),
-                    placeholder: (context, url) =>
-                        CircularProgressIndicator(),
-                    errorWidget: (context, url, error) =>
-                        Icon(Icons.error),
+                    placeholder: (context, url) => CircularProgressIndicator(),
+                    errorWidget: (context, url, error) => Icon(Icons.error),
                   )),
             ),
             SizedBox(
@@ -60,7 +82,33 @@ class PokeInfoCard extends StatelessWidget {
             SizedBox(
               height: 8.0,
             ),
-            Text('${pokemon.name}', style: PokeCustomTheme.getValueStyle()),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('${pokemonInstance.firstName}',
+                    style: PokeCustomTheme.getValueStyle()),
+                Visibility(
+                  visible: widget.editing,
+                  child: IconButton(
+                      onPressed: () async {
+                        Map returnFromDialog = await showDialog(
+                            context: context,
+                            builder: (BuildContext context) =>
+                                AlertDialogInputString(
+                                  title: 'Pokemon Name:',
+                                  helpText: 'Enter the surname of your pokemon.',
+                                ));
+                        if (returnFromDialog['ok'] &&
+                            returnFromDialog['inputText'].toString().isNotEmpty) {
+                          setState(() => pokemonInstance.firstName =
+                              returnFromDialog['inputText']);
+                          widget.onUpdatePokemonValues(pokemonInstance);
+                        }
+                      },
+                      icon: Icon(Icons.drive_file_rename_outline)),
+                )
+              ],
+            ),
             SizedBox(
               height: 34.0,
             ),
@@ -68,11 +116,12 @@ class PokeInfoCard extends StatelessWidget {
             SizedBox(
               height: 8.0,
             ),
-            Text('${pokemon.id}', style: PokeCustomTheme.getValueStyle()),
+            Text('${widget.pokemon.id}',
+                style: PokeCustomTheme.getValueStyle()),
             SizedBox(
               height: 34.0,
             ),
-            Text(pokemon.type2 == null ? 'Type' : 'Types',
+            Text(widget.pokemon.type2 == null ? 'Type' : 'Types',
                 style: PokeCustomTheme.getFieldStyle()),
             SizedBox(
               height: 8.0,
@@ -81,11 +130,11 @@ class PokeInfoCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                PokeTypeContainer(pokemon.type1),
+                PokeTypeContainer(widget.pokemon.type1),
                 SizedBox(height: 5.0),
                 Visibility(
-                  visible: pokemon.type2 == null ? false : true,
-                  child: PokeTypeContainer(pokemon.type2),
+                  visible: widget.pokemon.type2 == null ? false : true,
+                  child: PokeTypeContainer(widget.pokemon.type2),
                 ),
               ],
             ),
@@ -96,19 +145,40 @@ class PokeInfoCard extends StatelessWidget {
             SizedBox(
               height: 8.0,
             ),
-            Column(
-              children: widgetsAbility,
+            Visibility(
+              visible: widget.editing,
+              child: DropdownButton<Ability>(
+                iconSize: 40,
+                iconEnabledColor: Colors.grey[200],
+                value: selectedAbility,
+                items: dropDownAbility,
+                onChanged: (ability) {
+                  setState(() {
+                    selectedAbility = ability;
+                    pokemonInstance.abilitySelected = ability;
+                    widget.onUpdatePokemonValues(pokemonInstance);
+                  });
+                },
+              )
+            ),
+            Visibility(
+              visible: !widget.editing,
+              child: Column(
+                children: widgetsAbility,
+              ),
             ),
             SizedBox(
               height: 34.0,
             ),
             Visibility(
-              visible: addButtonVisibility,
+              visible: !widget.editing,
               child: Container(
                 margin: EdgeInsets.all(10),
                 height: 50.0,
                 child: ElevatedButton(
-                  onPressed: () => onAddButtonPressed(context, this.pokemon), //TODO pokemon instance dettail
+                  onPressed: () =>
+                      widget.onAddButtonPressed(context, this.widget.pokemon),
+                  //TODO pokemon instance dettail
                   //TODO: test
                   style: ElevatedButton.styleFrom(
                     primary: Colors.amber,
@@ -128,9 +198,6 @@ class PokeInfoCard extends StatelessWidget {
   }
 }
 
-
-
-
 //TODO spostare in file a parte
 class PokeAbilityInfo extends StatelessWidget {
   const PokeAbilityInfo({Key key, @required this.ability}) : super(key: key);
@@ -143,7 +210,7 @@ class PokeAbilityInfo extends StatelessWidget {
         child: Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(ability.name, style: PokeCustomTheme.getValueStyle()),
+        Container(width: 150, child: Text(ability.name, style: PokeCustomTheme.getValueStyle(), overflow: TextOverflow.ellipsis,)),
         Visibility(
             visible: ability.hidden,
             child: Text('(H)',

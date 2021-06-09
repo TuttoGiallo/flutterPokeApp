@@ -1,29 +1,28 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:poke_team/model/pokemon.dart';
 import 'package:poke_team/services/pokeCustomTheme.dart';
 
 class PokeBaseStatsCard extends StatelessWidget {
-  const PokeBaseStatsCard({Key key, @required this.poke}) : super(key: key);
+  const PokeBaseStatsCard({Key key, @required this.pokemon}) : super(key: key);
 
-  final Pokemon poke;
+  final Pokemon pokemon;
 
   @override
   Widget build(BuildContext context) {
     List<Widget> widgetsStats = [];
-    for(BaseStatName bsName in poke.baseStats.keys){
+    for(BaseStatName bsName in pokemon.baseStats.keys){
       widgetsStats.add(
         Column(
         children:[ Text(Pokemon.baseStatNameToString(bsName),
             textAlign: TextAlign.left,
             style: PokeCustomTheme.getFieldStyle()),
         SizedBox(
-          height: 10.0,
+          height: 8.0,
         ),
-        SinglePokeBaseStat(stat: poke.baseStats[bsName]),
+        SinglePokeBaseStat(stat: pokemon.baseStats[bsName]),
         SizedBox(
-          height: 27.0,
+          height: 20.0,
         )]
         )
       );
@@ -31,12 +30,14 @@ class PokeBaseStatsCard extends StatelessWidget {
     
     return Container(
       child: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(50.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: widgetsStats,
+        child: Visibility(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(50.0,20,50,0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: widgetsStats,
+            ),
           ),
         ),
       ),
@@ -44,6 +45,7 @@ class PokeBaseStatsCard extends StatelessWidget {
   }
 }
 
+//TODO parametrizzare e utilizzare sia per BaseStats che per Stats
 class SinglePokeBaseStat extends StatelessWidget {
   const SinglePokeBaseStat({Key key, @required this.stat}) : super(key: key);
   final int stat;

@@ -21,14 +21,7 @@ class Pokemon {
   List<Ability> abilities;
 
   //Base Stats:
-  Map<BaseStatName, int> baseStats = {
-    BaseStatName.hp: 0,
-    BaseStatName.attack: 0,
-    BaseStatName.defense: 0,
-    BaseStatName.specialAttack: 0,
-    BaseStatName.specialDefence: 0,
-    BaseStatName.speed: 0,
-  };
+  Map<BaseStatName, int> baseStats = getInitializedMapBaseStats();
 
   set hp(int hp) => baseStats[BaseStatName.hp] = hp;
   set attack(int attack) => baseStats[BaseStatName.attack] = attack;
@@ -89,6 +82,7 @@ class Pokemon {
     };
   }
 
+  //TODO: spostare robe statiche su stas in una classe a parte
   static String baseStatNameToString(BaseStatName baseStatName) {
     switch (baseStatName) {
       case BaseStatName.hp:
@@ -106,6 +100,37 @@ class Pokemon {
     }
     return '';
   }
+
+  static String baseStatNameToAbbreviation(BaseStatName baseStatName) {
+    switch (baseStatName) {
+      case BaseStatName.hp:
+        return "HP";
+      case BaseStatName.attack:
+        return "Att";
+      case BaseStatName.defense:
+        return "Def";
+      case BaseStatName.specialAttack:
+        return "SpA";
+      case BaseStatName.specialDefence:
+        return "SpD";
+      case BaseStatName.speed:
+        return "Spe";
+    }
+    return '';
+  }
+
+   static Map<BaseStatName, int> getInitializedMapBaseStats(){
+      return {
+        BaseStatName.hp: 0,
+        BaseStatName.attack: 0,
+        BaseStatName.defense: 0,
+        BaseStatName.specialAttack: 0,
+        BaseStatName.specialDefence: 0,
+        BaseStatName.speed: 0,
+      };
+   }
+
+
 }
 
 enum BaseStatName { hp, attack, defense, specialAttack, specialDefence, speed }

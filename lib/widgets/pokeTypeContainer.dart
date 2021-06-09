@@ -40,7 +40,7 @@ class PokeTypeContainer extends StatelessWidget {
   Widget build(BuildContext context) {
     if (type == null) return Container();
     return containerWithWidth(
-      Center(
+      Center( //TODO sostituire con borederText
         child: Stack(
           children: <Widget>[
             // Stroked text as border.

@@ -15,7 +15,7 @@ class _PokeAppState extends State<PokeApp> {
   bool loading = false;
   Future<List<Team>> loadTeams(BuildContext context) async {
     LoaderDB loaderDb = LoaderDB();
-   //await loaderDb.resetDb();
+   //await loaderDb.resetDb(); //PIALLA DATABASE
     List<Team> teamList = await loaderDb.loadTeams();
     return teamList;
   }

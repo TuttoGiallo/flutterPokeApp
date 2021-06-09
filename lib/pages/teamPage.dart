@@ -3,6 +3,7 @@ import 'package:poke_team/model/pokemonInstance.dart';
 import 'package:poke_team/model/team.dart';
 import 'package:poke_team/services/loaderDB.dart';
 import 'package:poke_team/services/loadingApi.dart';
+import 'package:poke_team/services/teamAnalysis.dart';
 import 'package:poke_team/widgets/deleteBackGround.dart';
 import 'package:poke_team/widgets/team-widget/addAPokemonDialog.dart';
 import 'package:poke_team/widgets/team-widget/pokemonListTile.dart';
@@ -58,9 +59,12 @@ class _TeamPageState extends State<TeamPage> {
       );
     } else {
       if (mapAddedPokemon['pokemon'] != null ? true : false) {
+        PokemonInstance newAddedPokemon = mapAddedPokemon['pokemon'];
         setState(() {
-          team.addPokemon(mapAddedPokemon['pokemon']);
-          loaderDB.storePokemonInstanceInTeam(mapAddedPokemon['pokemon']);
+          team.addPokemon(newAddedPokemon);
+          loaderDB
+              .storePokemonInstanceInTeam(newAddedPokemon)
+              .then((newDbKey) => newAddedPokemon.dbKey = newDbKey);
         });
       }
     }
@@ -172,8 +176,8 @@ class _TeamPageState extends State<TeamPage> {
                 team.teamMembers..insert(newIndex, poke);
               });
             }),
-        TeamCoverage(team:team),
-        Text('Stats'),
+        TeamCoverage(team: team),
+        Text('Test immunity from ability: ${TeamAnalysis.typeImmunityAbility(team)}'),
         Text('Editing'),
       ]),
     );

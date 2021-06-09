@@ -82,7 +82,6 @@ class LoaderDB {
     }
     int id = await _storeTeams.add(_db, team.map);
     team.dbKey = id;
-    print('loaderDB store new team: $id');
     return id;
   }
 
@@ -114,6 +113,10 @@ class LoaderDB {
       await _storeTeams.record(team.dbKey).put(_db, team.map);
   }
 
+  Future updatePokemonInstance(PokemonInstance pokemonInstance) async {
+    await _storePokemon.record(pokemonInstance.dbKey).put(_db, pokemonInstance.map);
+  }
+
   Future resetDb() async {
     if (_db == null) {
       await init();
@@ -135,6 +138,8 @@ class LoaderDB {
     }
     await _storeTeams.delete(_db);
   }
+
+
 
 
 

@@ -1,4 +1,7 @@
-class Ability{
+import 'package:poke_team/model/pokemonType.dart';
+import 'package:poke_team/model/pokemonTypes.dart';
+
+class Ability {
   String name;
   String shortEffect;
   String effect;
@@ -8,7 +11,8 @@ class Ability{
 
   Ability(this.name, {this.hidden, this.slot, this.shortEffect, this.effect});
 
-  Ability.fromMap(Map<String, dynamic> abilityMap) { //TODO creare tabella/store separato per le abilità, così da usare solo delle referenze a esse.
+  Ability.fromMap(Map<String, dynamic> abilityMap) {
+    //TODO creare tabella/store separato per le abilità, così da usare solo delle referenze a esse.
     name = abilityMap['name'];
     shortEffect = abilityMap['shortEffect'];
     hidden = abilityMap['hidden'];
@@ -27,4 +31,30 @@ class Ability{
   }
 
   Map toJson() => this.map;
+
+  static double abilityDamageModficatorOnType(
+      Ability ability, PokemonType pokemonType) {
+    double damageMod = 1;
+    switch (ability.name) {
+      case 'levitate':
+        damageMod = pokemonType == PokemonTypes.ground ? 0 : 1;
+        break;
+      case 'flash-fire':
+        damageMod = pokemonType == PokemonTypes.fire ? 0 : 1;
+        break;
+      case 'lightning-rod':
+        damageMod = pokemonType == PokemonTypes.electric ? 0 : 1;
+        break;
+      case 'sap-sipper':
+        damageMod = pokemonType == PokemonTypes.grass ? 0 : 1;
+        break;
+      case 'thick-fat':
+        damageMod =
+            pokemonType == PokemonTypes.ice || pokemonType == PokemonTypes.fire
+                ? 0.5
+                : 1;
+        break;
+    }
+    return damageMod;
+  }
 }

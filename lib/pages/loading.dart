@@ -60,7 +60,7 @@ class _LoadingState extends State<Loading> {
       Pokemon poke;
       if (safePokemonReturn['ex_code'] == 0 &&
           (poke = safePokemonReturn['pokemon']) != null) {
-        PokemonInstance pokemonInstance = new PokemonInstance(poke, team,poke.name + 'Giallo');
+        PokemonInstance pokemonInstance = new PokemonInstance(poke, team, poke.name);
         dynamic addedPokemon = await Navigator.pushNamed(context, '/poke',
             arguments: {'pokemon': pokemonInstance, 'add': true});
         Navigator.pop(context, {'ex_code': 0, 'pokemon': addedPokemon});
