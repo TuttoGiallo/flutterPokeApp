@@ -236,7 +236,7 @@ class PokemonTypes {
     getAllTypes().forEach((type) {
       double factor = typeEffectsPokemon[type];
       if (factor > 1 &&
-              wrind == WeaknessResistanceImmunityNormalDamage.weakness ||
+          wrind == WeaknessResistanceImmunityNormalDamage.weakness ||
           0 < factor &&
               factor < 1 &&
               wrind == WeaknessResistanceImmunityNormalDamage.resistance ||
@@ -252,4 +252,41 @@ class PokemonTypes {
         value: (entryValue) => entryValue.value);
   } //vabbeh, mega bordello per ritornare una mappa ordinata...
 
+  static PokemonType getHiddenPowerType(int number) {
+    switch (number) {
+      case 0:
+        return fighting;
+      case 1 :
+        return flying;
+      case 2 :
+        return poison;
+      case 3 :
+        return ground;
+      case 4 :
+        return rock;
+      case 5 :
+        return bug;
+      case 6 :
+        return ghost;
+      case 7 :
+        return steel;
+      case 8 :
+        return fire;
+      case 9 :
+        return water;
+      case 10 :
+        return grass;
+      case 11 :
+        return electric;
+      case 12 :
+        return psychic;
+      case 13 :
+        return ice;
+      case 14 :
+        return dragon;
+      case 15 :
+        return dark;
+    }
+    return null;
+  }
 }

@@ -5,6 +5,7 @@ import 'package:poke_team/model/pokemonStats.dart';
 import 'package:poke_team/services/pokeCustomTheme.dart';
 import 'package:poke_team/widgets/pokemon-widget/inputIvEvNumberField.dart';
 import 'package:poke_team/widgets/pokemon-widget/natureCard.dart';
+import 'package:poke_team/widgets/pokemon-widget/pokeHiddenPowerCard.dart';
 import 'package:poke_team/widgets/pokemon-widget/singlePokeStat.dart';
 import 'package:poke_team/widgets/warningTextWidget.dart';
 
@@ -166,7 +167,9 @@ class _PokeStatsCardState extends State<PokeStatsCard> {
                 children: [
                   Visibility(
                       visible: ivExceed || evExceed || sumEvExceed,
-                      child: SizedBox(height: 25,)),
+                      child: SizedBox(
+                        height: 25,
+                      )),
                   Visibility(
                       visible: ivExceed,
                       child: WarningTextWidget(text: 'IV exceed')),
@@ -185,7 +188,9 @@ class _PokeStatsCardState extends State<PokeStatsCard> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   mainAxisAlignment: MainAxisAlignment.start,
-                  children: widgetsStats,
+                  children: widgetsStats
+                    ..add(
+                        PokeHiddenPowerCard(pokemonInstance: pokemonInstance)),
                 ),
               ),
             ),

@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:poke_team/model/pokemon.dart';
 import 'package:poke_team/model/pokemonStats.dart';
+import 'package:poke_team/model/pokemonType.dart';
+import 'package:poke_team/model/pokemonTypes.dart';
 import 'package:poke_team/model/team.dart';
 
 import 'ability.dart';
@@ -20,17 +22,17 @@ class PokemonInstance extends Pokemon {
 
   Nature nature;
 
-  get hp => calcStat(StatName.hp);
+  int get hp => calcStat(StatName.hp);
 
-  get attack => calcStat(StatName.attack);
+  int get attack => calcStat(StatName.attack);
 
-  get defense => calcStat(StatName.defense);
+  int get defense => calcStat(StatName.defense);
 
-  get specialAttack => calcStat(StatName.specialAttack);
+  int get specialAttack => calcStat(StatName.specialAttack);
 
-  get specialDefense => calcStat(StatName.specialDefense);
+  int get specialDefense => calcStat(StatName.specialDefense);
 
-  get speed => calcStat(StatName.speed);
+  int get speed => calcStat(StatName.speed);
 
   //IV
   set ivHp(int hp) => iV[StatName.hp] = hp;
@@ -47,17 +49,17 @@ class PokemonInstance extends Pokemon {
 
   set ivSpeed(int speed) => iV[StatName.speed] = speed;
 
-  get ivHp => iV[StatName.hp];
+  int get ivHp => iV[StatName.hp];
 
-  get ivAttack => iV[StatName.attack];
+  int get ivAttack => iV[StatName.attack];
 
-  get ivDefense => iV[StatName.defense];
+  int get ivDefense => iV[StatName.defense];
 
-  get ivSpecialAttack => iV[StatName.specialAttack];
+  int get ivSpecialAttack => iV[StatName.specialAttack];
 
-  get ivSpecialDefense => iV[StatName.specialDefense];
+  int get ivSpecialDefense => iV[StatName.specialDefense];
 
-  get ivSpeed => iV[StatName.speed];
+  int get ivSpeed => iV[StatName.speed];
 
   //EV
   set evHp(int hp) => eV[StatName.hp] = hp;
@@ -74,17 +76,48 @@ class PokemonInstance extends Pokemon {
 
   set evSpeed(int speed) => eV[StatName.speed] = speed;
 
-  get evHp => eV[StatName.hp];
+  int get evHp => eV[StatName.hp];
 
-  get evAttack => eV[StatName.attack];
+  int get evAttack => eV[StatName.attack];
 
-  get evDefense => eV[StatName.defense];
+  int get evDefense => eV[StatName.defense];
 
-  get evSpecialAttack => eV[StatName.specialAttack];
+  int get evSpecialAttack => eV[StatName.specialAttack];
 
-  get evSpecialDefense => eV[StatName.specialDefense];
+  int get evSpecialDefense => eV[StatName.specialDefense];
 
-  get evSpeed => eV[StatName.speed];
+  int get evSpeed => eV[StatName.speed];
+
+  PokemonType get hiddenPowerType {
+    int numberHP = ((ivHp%2 +
+                2 * (ivAttack%2) +
+                4 *  (ivDefense%2) +
+                8 *  (ivSpeed%2) +
+                16 * (ivSpecialAttack%2) +
+                32 * (ivSpecialDefense%2)) *
+            15 /
+            63)
+        .truncate();
+    return PokemonTypes.getHiddenPowerType(numberHP);
+  }
+
+  int get hiddenPowerDamage {
+    return ((ivHp +
+                    2 * _getSecondLastSignificantBit(ivAttack) +
+                    4 * _getSecondLastSignificantBit(ivDefense) +
+                    8 * _getSecondLastSignificantBit(ivSpeed) +
+                    16 * _getSecondLastSignificantBit(ivSpecialAttack) +
+                    32 * _getSecondLastSignificantBit(ivSpecialDefense)) *
+                40 /
+                63)
+            .truncate() +
+        30;
+  }
+
+  int _getSecondLastSignificantBit(int value) {
+    int remainder = value % 4;
+    return remainder == 3 || remainder == 2 ? 1 : 0;
+  }
 
   ///creazione a partire da un pokemon e un team
   ///inserisce come [abilitySelected] la prima del pokemon
@@ -178,16 +211,21 @@ class PokemonInstance extends Pokemon {
     return value;
   }
 
-  int getStatFromNameStat(StatName statName){
-    switch (statName){
-      case StatName.hp: return hp;
-      case StatName.attack: return attack;
-      case StatName.defense: return defense;
-      case StatName.specialAttack: return specialAttack;
-      case StatName.specialDefense: return specialDefense;
-      case StatName.speed: return speed;
+  int getStatFromNameStat(StatName statName) {
+    switch (statName) {
+      case StatName.hp:
+        return hp;
+      case StatName.attack:
+        return attack;
+      case StatName.defense:
+        return defense;
+      case StatName.specialAttack:
+        return specialAttack;
+      case StatName.specialDefense:
+        return specialDefense;
+      case StatName.speed:
+        return speed;
     }
     return 0;
   }
-
 }
