@@ -85,8 +85,11 @@ class _PokeInfoCardState extends State<PokeInfoCard> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('${pokemonInstance.firstName}',
-                    style: PokeCustomTheme.getValueStyle()),
+                Container(
+                  width: 200,
+                  child: Text('${pokemonInstance.firstName}',
+                      style: PokeCustomTheme.getValueStyle(),),
+                ),
                 Visibility(
                   visible: widget.editing,
                   child: IconButton(
@@ -167,30 +170,7 @@ class _PokeInfoCardState extends State<PokeInfoCard> {
                 children: widgetsAbility,
               ),
             ),
-            SizedBox(
-              height: 34.0,
-            ),
-            Visibility(
-              visible: !widget.editing,
-              child: Container(
-                margin: EdgeInsets.all(10),
-                height: 50.0,
-                child: ElevatedButton(
-                  onPressed: () =>
-                      widget.onAddButtonPressed(context, this.widget.pokemon),
-                  //TODO pokemon instance dettail
-                  //TODO: test
-                  style: ElevatedButton.styleFrom(
-                    primary: Colors.amber,
-                  ),
-                  child: Text("Aggiungi",
-                      style: TextStyle(
-                        fontSize: 20,
-                        color: Colors.grey[800],
-                      )),
-                ),
-              ),
-            ),
+            SizedBox(height: 50,),
           ],
         ),
       ),

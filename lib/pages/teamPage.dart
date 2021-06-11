@@ -105,6 +105,7 @@ class _TeamPageState extends State<TeamPage> {
             itemBuilder: (BuildContext bc) {
               return _menuStringIndex.keys
                   .map((teamOption) => PopupMenuItem(
+                        enabled: team.isTeamNotEmpty(),
                         padding: const EdgeInsets.symmetric(
                             vertical: 15.0, horizontal: 20),
                         child: Text(teamOption),
@@ -127,23 +128,23 @@ class _TeamPageState extends State<TeamPage> {
         ],
       ),
       floatingActionButton: Visibility(
-        visible: team.isTeamNotFull() && _selectedItem == 'Pokemon',
-        child: FloatingActionButton.extended(
-          onPressed: () async {
-            Map returnFromDialog = await showDialog(
-                context: context,
-                builder: (BuildContext context) => AddAPokemonDialog(
-                      allPokemonName: LoadingApi.getAllPokemonName(),
-                    ));
-            if (returnFromDialog['ok']) {
-              onAddedPokemon(returnFromDialog['pokemonName']);
-            }
-          },
-          label: const Text('Add a Pokemon'),
-          icon: const Icon(Icons.add),
-          backgroundColor: Colors.amber,
-        ),
+      visible: team.isTeamNotFull() && _selectedItem == 'Pokemon',
+      child: FloatingActionButton.extended(
+        onPressed: () async {
+          Map returnFromDialog = await showDialog(
+              context: context,
+              builder: (BuildContext context) => AddAPokemonDialog(
+                allPokemonName: LoadingApi.getAllPokemonName(),
+              ));
+          if (returnFromDialog['ok']) {
+            onAddedPokemon(returnFromDialog['pokemonName']);
+          }
+        },
+        label: const Text('Add a Pokemon'),
+        icon: const Icon(Icons.add),
+        backgroundColor: Colors.amber,
       ),
+    ),
       body: IndexedStack(index: _menuStringIndex[_selectedItem], children: [
         ReorderableListView(
             children: team.teamMembers

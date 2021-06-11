@@ -41,4 +41,8 @@ class Team{
   bool isTeamEmpty(){
     return teamMembers.length == 0;
   }
+
+  bool isTeamNotEmpty(){
+    return teamMembers.length > 0;
+  }
 }

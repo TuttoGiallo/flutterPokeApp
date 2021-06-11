@@ -13,7 +13,7 @@ class PokemonPage extends StatefulWidget {
 }
 
 class _PokemonPageState extends State<PokemonPage> {
-  Pokemon poke;
+  Pokemon pokemon;
   int _selectedIndex;
 
   @override
@@ -39,22 +39,22 @@ class _PokemonPageState extends State<PokemonPage> {
   Widget build(BuildContext context) {
     //retrieve the object pass from loading page.
     Map pushedArgs = ModalRoute.of(context).settings.arguments;
-    poke = pushedArgs['pokemon'];
+    pokemon = pushedArgs['pokemon'];
     bool addPokemon = pushedArgs['add'];
 
     Widget statsWidget = addPokemon
-        ? PokeBaseStatsCard(pokemon: this.poke)
-        : PokeStatsCard(pokemon: this.poke, onUpdatePokemonValues: onUpdatePokemonInstance,);
+        ? PokeBaseStatsCard(pokemon: this.pokemon)
+        : PokeStatsCard(pokemon: this.pokemon, onUpdatePokemonValues: onUpdatePokemonInstance,);
 
     List<Widget> _widgetOptions = <Widget>[
       //getPokeInfo(addButtonVisibility),
       PokeInfoCard(
         editing: !addPokemon,
-        pokemon: this.poke,
+        pokemon: this.pokemon,
         onAddButtonPressed: onAddButtonPress,
         onUpdatePokemonValues: onUpdatePokemonInstance,
       ),
-      PokeTypesEffectCard(poke: this.poke),
+      PokeTypesEffectCard(poke: this.pokemon),
       statsWidget,
       //WebView(initialUrl: 'https://bulbapedia.bulbagarden.net/wiki/Pikachu_(Pokémon)') TODO webview!
     ];
@@ -62,10 +62,21 @@ class _PokemonPageState extends State<PokemonPage> {
     return Scaffold(
       backgroundColor: Colors.grey[800],
       appBar: AppBar(
-        title: Text('${poke.name.toUpperCase()} PokeCard'),
+        title: Text('${pokemon.name.toUpperCase()} PokeCard'),
         centerTitle: true,
         backgroundColor: Colors.amber,
       ),
+
+      floatingActionButton: Visibility(
+        visible: addPokemon,
+        child: FloatingActionButton.extended(
+          onPressed: () => onAddButtonPress(context, this.pokemon),
+          label: const Text('Add Pokemon'),
+          icon: const Icon(Icons.add),
+          backgroundColor: Colors.amber,
+        ),
+      ),
+
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.amber,
         items: const <BottomNavigationBarItem>[

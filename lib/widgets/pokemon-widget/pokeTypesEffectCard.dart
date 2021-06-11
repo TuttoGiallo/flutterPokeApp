@@ -42,7 +42,7 @@ class PokeTypesEffectCard extends StatelessWidget {
             PokeTypeXFactorList(
                 this.poke, WeaknessResistanceImmunityNormalDamage.immunity),
             SizedBox(
-              height: 34.0,
+              height: 50.0,
             ),
           ],
         ),
