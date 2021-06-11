@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:poke_team/model/ability.dart';
+import 'package:poke_team/model/pokemonStats.dart';
 import 'package:poke_team/model/pokemonType.dart';
 import 'package:poke_team/model/pokemonTypes.dart';
 
@@ -21,21 +22,33 @@ class Pokemon {
   List<Ability> abilities;
 
   //Base Stats:
-  Map<BaseStatName, int> baseStats = getInitializedMapBaseStats();
+  Map<StatName, int> baseStats = PokemonStats.getNewInitializedMapBaseStats();
 
-  set hp(int hp) => baseStats[BaseStatName.hp] = hp;
-  set attack(int attack) => baseStats[BaseStatName.attack] = attack;
-  set defense(int defense) => baseStats[BaseStatName.defense] = defense;
-  set specialAttack(int specialAttack) => baseStats[BaseStatName.specialAttack] = specialAttack;
-  set specialDefence(int specialDefence) => baseStats[BaseStatName.specialDefence] = specialDefence;
-  set speed(int speed) => baseStats[BaseStatName.speed] = speed;
+  set baseHp(int hp) => baseStats[StatName.hp] = hp;
 
-  get hp => baseStats[BaseStatName.hp];
-  get attack => baseStats[BaseStatName.attack];
-  get defense => baseStats[BaseStatName.defense];
-  get specialAttack => baseStats[BaseStatName.specialAttack];
-  get specialDefence => baseStats[BaseStatName.specialDefence];
-  get speed => baseStats[BaseStatName.speed];
+  set baseAttack(int attack) => baseStats[StatName.attack] = attack;
+
+  set baseDefense(int defense) => baseStats[StatName.defense] = defense;
+
+  set baseSpecialAttack(int specialAttack) =>
+      baseStats[StatName.specialAttack] = specialAttack;
+
+  set baseSpecialDefense(int specialDefence) =>
+      baseStats[StatName.specialDefense] = specialDefence;
+
+  set baseSpeed(int speed) => baseStats[StatName.speed] = speed;
+
+  get baseHp => baseStats[StatName.hp];
+
+  get baseAttack => baseStats[StatName.attack];
+
+  get baseDefense => baseStats[StatName.defense];
+
+  get baseSpecialAttack => baseStats[StatName.specialAttack];
+
+  get baseSpecialDefense => baseStats[StatName.specialDefense];
+
+  get baseSpeed => baseStats[StatName.speed];
 
   Pokemon({this.name, this.id, this.type1, this.type2}) {
     this.abilities = [];
@@ -57,12 +70,12 @@ class Pokemon {
     abilitiesData.forEach((abilityMap) {
       abilities.add(new Ability.fromMap(abilityMap));
     });
-    hp = pokemonMap['hp'];
-    attack = pokemonMap['attack'];
-    defense = pokemonMap['defense'];
-    specialAttack = pokemonMap['specialAttack'];
-    specialDefence = pokemonMap['specialDefence'];
-    speed = pokemonMap['speed'];
+    baseHp = pokemonMap['baseHp'];
+    baseAttack = pokemonMap['baseAttack'];
+    baseDefense = pokemonMap['baseDefense'];
+    baseSpecialAttack = pokemonMap['baseSpecialAttack'];
+    baseSpecialDefense = pokemonMap['baseSpecialDefense'];
+    baseSpeed = pokemonMap['baseSpeed'];
   }
 
   Map<String, dynamic> get map {
@@ -73,64 +86,13 @@ class Pokemon {
       'type2': type2 != null ? type2.name : '',
       'urlSprite': urlSprite,
       'abilities': jsonEncode(abilities),
-      'hp': hp,
-      'attack': attack,
-      'defense': defense,
-      'specialAttack': specialAttack,
-      'specialDefence': specialDefence,
-      'speed': speed,
+      'baseHp': baseHp,
+      'baseAttack': baseAttack,
+      'baseDefense': baseDefense,
+      'baseSpecialAttack': baseSpecialAttack,
+      'baseSpecialDefense': baseSpecialDefense,
+      'baseSpeed': baseSpeed,
     };
   }
-
-  //TODO: spostare robe statiche su stas in una classe a parte
-  static String baseStatNameToString(BaseStatName baseStatName) {
-    switch (baseStatName) {
-      case BaseStatName.hp:
-        return "HP";
-      case BaseStatName.attack:
-        return "Attack";
-      case BaseStatName.defense:
-        return "Defence";
-      case BaseStatName.specialAttack:
-        return "Special Attack";
-      case BaseStatName.specialDefence:
-        return "Special Defence";
-      case BaseStatName.speed:
-        return "Speed";
-    }
-    return '';
-  }
-
-  static String baseStatNameToAbbreviation(BaseStatName baseStatName) {
-    switch (baseStatName) {
-      case BaseStatName.hp:
-        return "HP";
-      case BaseStatName.attack:
-        return "Att";
-      case BaseStatName.defense:
-        return "Def";
-      case BaseStatName.specialAttack:
-        return "SpA";
-      case BaseStatName.specialDefence:
-        return "SpD";
-      case BaseStatName.speed:
-        return "Spe";
-    }
-    return '';
-  }
-
-   static Map<BaseStatName, int> getInitializedMapBaseStats(){
-      return {
-        BaseStatName.hp: 0,
-        BaseStatName.attack: 0,
-        BaseStatName.defense: 0,
-        BaseStatName.specialAttack: 0,
-        BaseStatName.specialDefence: 0,
-        BaseStatName.speed: 0,
-      };
-   }
-
-
 }
 
-enum BaseStatName { hp, attack, defense, specialAttack, specialDefence, speed }

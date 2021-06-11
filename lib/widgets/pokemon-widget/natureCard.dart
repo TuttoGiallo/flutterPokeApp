@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:poke_team/model/nature.dart';
-import 'package:poke_team/model/pokemon.dart';
+import 'package:poke_team/model/pokemonStats.dart';
 
 import '../borderText.dart';
 
@@ -21,14 +21,14 @@ class NatureCard extends StatelessWidget {
         Row(
           children: [
             BorderText(
-              text: '+${Pokemon.baseStatNameToAbbreviation(nature.up)}',
+              text: '+${PokemonStats.statNameToAbbreviation(nature.up)}',
               fontSize: 20,
             ),
             SizedBox(
               width: 8,
             ),
             BorderText(
-              text: '-${Pokemon.baseStatNameToAbbreviation(nature.down)}',
+              text: '-${PokemonStats.statNameToAbbreviation(nature.down)}',
               fontSize: 20,
             ),
           ],

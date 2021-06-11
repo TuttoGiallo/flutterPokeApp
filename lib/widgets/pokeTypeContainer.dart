@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:poke_team/model/pokemonType.dart';
 import 'package:poke_team/services/typeColors.dart';

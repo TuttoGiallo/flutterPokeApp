@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart';
 import 'package:poke_team/model/ability.dart';
 import 'package:poke_team/model/pokemon.dart';
+import 'package:poke_team/model/pokemonStats.dart';
 import 'package:poke_team/model/pokemonTypes.dart';
 
 class PokeApi {
@@ -31,22 +32,22 @@ class PokeApi {
       int bs = baseStat["base_stat"];
       switch (baseStat["stat"]['name']) {
         case 'attack':
-          poke.baseStats[BaseStatName.attack] = bs;
+          poke.baseStats[StatName.attack] = bs;
           break;
         case 'defense':
-          poke.baseStats[BaseStatName.defense] = bs;
+          poke.baseStats[StatName.defense] = bs;
           break;
         case 'special-attack':
-          poke.baseStats[BaseStatName.specialAttack] = bs;
+          poke.baseStats[StatName.specialAttack] = bs;
           break;
         case 'special-defense':
-          poke.baseStats[BaseStatName.specialDefence] = bs;
+          poke.baseStats[StatName.specialDefense] = bs;
           break;
         case 'hp':
-          poke.baseStats[BaseStatName.hp] = bs;
+          poke.baseStats[StatName.hp] = bs;
           break;
         case 'speed':
-          poke.baseStats[BaseStatName.speed] = bs;
+          poke.baseStats[StatName.speed] = bs;
           break;
       }
     }

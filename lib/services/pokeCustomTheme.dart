@@ -2,17 +2,17 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 
 class PokeCustomTheme {
-  static TextStyle getValueStyle() {
+  static TextStyle getValueStyle({double fontSize = 24.0}) {
     return TextStyle(
-      fontSize: 28.0,
+      fontSize: fontSize,
       color: Colors.grey[500],
       fontStyle: FontStyle.italic,
     );
   }
 
-  static TextStyle getFieldStyle() {
+  static TextStyle getFieldStyle({double fontSize = 20.0}) {
     return TextStyle(
-      fontSize: 24.0,
+      fontSize: fontSize,
       fontWeight: FontWeight.bold,
       color: Colors.amber,
     );

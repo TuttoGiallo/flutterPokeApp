@@ -48,11 +48,29 @@ class Ability {
       case 'sap-sipper':
         damageMod = pokemonType == PokemonTypes.grass ? 0 : 1;
         break;
+      case 'water-absorb':
+        damageMod = pokemonType == PokemonTypes.water ? 0 : 1;
+        break;
+      case 'storm-drain':
+        damageMod = pokemonType == PokemonTypes.water ? 0 : 1;
+        break;
+      case 'volt-absorb':
+        damageMod = pokemonType == PokemonTypes.electric ? 0 : 1;
+        break;
       case 'thick-fat':
         damageMod =
             pokemonType == PokemonTypes.ice || pokemonType == PokemonTypes.fire
                 ? 0.5
                 : 1;
+        break;
+      case 'fluffy':
+        damageMod = pokemonType == PokemonTypes.fire ? 2 : 1;
+        break;
+      case 'heatproof':
+        damageMod = pokemonType == PokemonTypes.fire ? 0.5 : 1;
+        break;
+      case 'water-bubble':
+        damageMod = pokemonType == PokemonTypes.fire ? 0.5 : 1;
         break;
     }
     return damageMod;

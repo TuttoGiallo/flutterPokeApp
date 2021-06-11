@@ -1,116 +1,117 @@
 import 'package:poke_team/model/pokemon.dart';
+import 'package:poke_team/model/pokemonStats.dart';
 
 class Nature {
   NatureName name;
 
-  BaseStatName up;
-  BaseStatName down;
+  StatName up;
+  StatName down;
 
   Nature(this.name) {
     switch (this.name) {
       case NatureName.Hardy:
-        up = BaseStatName.attack;
-        down = BaseStatName.attack;
+        up = StatName.attack;
+        down = StatName.attack;
         break;
       case NatureName.Lonely:
-        up = BaseStatName.attack;
-        down = BaseStatName.defense;
+        up = StatName.attack;
+        down = StatName.defense;
         break;
       case NatureName.Brave:
-        up = BaseStatName.attack;
-        down = BaseStatName.speed;
+        up = StatName.attack;
+        down = StatName.speed;
         break;
       case NatureName.Adamant:
-        up = BaseStatName.attack;
-        down = BaseStatName.specialAttack;
+        up = StatName.attack;
+        down = StatName.specialAttack;
         break;
       case NatureName.Naughty:
-        up = BaseStatName.attack;
-        down = BaseStatName.specialDefence;
+        up = StatName.attack;
+        down = StatName.specialDefense;
         break;
 
       case NatureName.Bold:
-        up = BaseStatName.defense;
-        down = BaseStatName.attack;
+        up = StatName.defense;
+        down = StatName.attack;
         break;
       case NatureName.Docile:
-        up = BaseStatName.defense;
-        down = BaseStatName.defense;
+        up = StatName.defense;
+        down = StatName.defense;
         break;
       case NatureName.Relaxed:
-        up = BaseStatName.defense;
-        down = BaseStatName.speed;
+        up = StatName.defense;
+        down = StatName.speed;
         break;
       case NatureName.Impish:
-        up = BaseStatName.defense;
-        down = BaseStatName.specialAttack;
+        up = StatName.defense;
+        down = StatName.specialAttack;
         break;
       case NatureName.Lax:
-        up = BaseStatName.defense;
-        down = BaseStatName.specialDefence;
+        up = StatName.defense;
+        down = StatName.specialDefense;
         break;
 
       case NatureName.Timid:
-        up = BaseStatName.speed;
-        down = BaseStatName.attack;
+        up = StatName.speed;
+        down = StatName.attack;
         break;
       case NatureName.Hasty:
-        up = BaseStatName.speed;
-        down = BaseStatName.defense;
+        up = StatName.speed;
+        down = StatName.defense;
         break;
       case NatureName.Serious:
-        up = BaseStatName.speed;
-        down = BaseStatName.speed;
+        up = StatName.speed;
+        down = StatName.speed;
         break;
       case NatureName.Jolly:
-        up = BaseStatName.speed;
-        down = BaseStatName.specialAttack;
+        up = StatName.speed;
+        down = StatName.specialAttack;
         break;
       case NatureName.Naive:
-        up = BaseStatName.speed;
-        down = BaseStatName.specialDefence;
+        up = StatName.speed;
+        down = StatName.specialDefense;
         break;
 
       case NatureName.Modest:
-        up = BaseStatName.specialAttack;
-        down = BaseStatName.attack;
+        up = StatName.specialAttack;
+        down = StatName.attack;
         break;
       case NatureName.Mild:
-        up = BaseStatName.specialAttack;
-        down = BaseStatName.defense;
+        up = StatName.specialAttack;
+        down = StatName.defense;
         break;
       case NatureName.Quiet:
-        up = BaseStatName.specialAttack;
-        down = BaseStatName.speed;
+        up = StatName.specialAttack;
+        down = StatName.speed;
         break;
       case NatureName.Bashful:
-        up = BaseStatName.specialAttack;
-        down = BaseStatName.specialAttack;
+        up = StatName.specialAttack;
+        down = StatName.specialAttack;
         break;
       case NatureName.Rash:
-        up = BaseStatName.specialAttack;
-        down = BaseStatName.specialDefence;
+        up = StatName.specialAttack;
+        down = StatName.specialDefense;
         break;
 
       case NatureName.Calm:
-        up = BaseStatName.specialDefence;
-        down = BaseStatName.attack;
+        up = StatName.specialDefense;
+        down = StatName.attack;
         break;
       case NatureName.Gentle:
-        up = BaseStatName.specialDefence;
-        down = BaseStatName.defense;
+        up = StatName.specialDefense;
+        down = StatName.defense;
         break;
       case NatureName.Sassy:
-        up = BaseStatName.specialDefence;
-        down = BaseStatName.speed;
+        up = StatName.specialDefense;
+        down = StatName.speed;
         break;
       case NatureName.Careful:
-        up = BaseStatName.specialDefence;
-        down = BaseStatName.specialAttack;
+        up = StatName.specialDefense;
+        down = StatName.specialAttack;
         break;
       case NatureName.Quirky:
-        up = BaseStatName.specialDefence;
-        down = BaseStatName.specialDefence;
+        up = StatName.specialDefense;
+        down = StatName.specialDefense;
         break;
     }
   }

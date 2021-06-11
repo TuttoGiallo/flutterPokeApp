@@ -40,15 +40,16 @@ class _PokemonPageState extends State<PokemonPage> {
     //retrieve the object pass from loading page.
     Map pushedArgs = ModalRoute.of(context).settings.arguments;
     poke = pushedArgs['pokemon'];
+    bool addPokemon = pushedArgs['add'];
 
-    Widget statsWidget = pushedArgs['add']
+    Widget statsWidget = addPokemon
         ? PokeBaseStatsCard(pokemon: this.poke)
         : PokeStatsCard(pokemon: this.poke, onUpdatePokemonValues: onUpdatePokemonInstance,);
 
     List<Widget> _widgetOptions = <Widget>[
       //getPokeInfo(addButtonVisibility),
       PokeInfoCard(
-        editing: !pushedArgs['add'],
+        editing: !addPokemon,
         pokemon: this.poke,
         onAddButtonPressed: onAddButtonPress,
         onUpdatePokemonValues: onUpdatePokemonInstance,
@@ -78,7 +79,7 @@ class _PokemonPageState extends State<PokemonPage> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.bar_chart),
-            label: 'Base Stats',
+            label: 'Stats',
           ),
           // BottomNavigationBarItem(
           //   icon: Icon(Icons.web),
