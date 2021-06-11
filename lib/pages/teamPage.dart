@@ -3,11 +3,11 @@ import 'package:poke_team/model/pokemonInstance.dart';
 import 'package:poke_team/model/team.dart';
 import 'package:poke_team/services/loaderDB.dart';
 import 'package:poke_team/services/loadingApi.dart';
-import 'package:poke_team/services/teamAnalysis.dart';
 import 'package:poke_team/widgets/deleteBackGround.dart';
 import 'package:poke_team/widgets/team-widget/addAPokemonDialog.dart';
 import 'package:poke_team/widgets/team-widget/pokemonListTile.dart';
 import 'package:poke_team/widgets/team-widget/teamCoverage.dart';
+import 'package:poke_team/widgets/team-widget/teamStats.dart';
 
 class TeamPage extends StatefulWidget {
   const TeamPage({Key key}) : super(key: key);
@@ -26,8 +26,8 @@ class _TeamPageState extends State<TeamPage> {
   final Map<String, int> _menuStringIndex = {
     'Pokemon': 0,
     'Coverages': 1,
-    'Stats': 2,
-    'Editing': 3,
+    'Average Stats': 2,
+    //'Editing': 3,
   };
 
   @override
@@ -177,8 +177,8 @@ class _TeamPageState extends State<TeamPage> {
               });
             }),
         TeamCoverage(team: team),
-        Text('Test immunity from ability: ${TeamAnalysis.typeImmunityAbility(team)}'),
-        Text('Editing'),
+        TeamStats(team: team),
+        //Text('Editing'),
       ]),
     );
   }

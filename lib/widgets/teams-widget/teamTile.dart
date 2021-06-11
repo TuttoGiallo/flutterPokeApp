@@ -34,7 +34,7 @@ class TeamTile extends StatelessWidget {
                 return Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 1.5),
                     child: CircleAvatar(
-                        radius: 25,
+                        radius: 23,
                         backgroundColor: Colors.grey[400],
                         child: CachedNetworkImage(
                           imageUrl: pokemon.urlSprite,
