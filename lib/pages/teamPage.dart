@@ -30,11 +30,15 @@ class _TeamPageState extends State<TeamPage> {
     //'Editing': 3,
   };
 
+  bool deleting = true;
+  SnackBar _snackBar;
+
   @override
   void initState() {
     loaderDB = LoaderDB();
     super.initState();
   }
+
 
   onAddedPokemon(String pokemonNameOrId) async {
     dynamic mapAddedPokemon =
@@ -82,8 +86,27 @@ class _TeamPageState extends State<TeamPage> {
     }); //TODO quando sarà paremetrizzato non si potrà passare il nome ma si dovrà passare l'intero pokemon
   }
 
+  cancelDelete(PokemonInstance pokemon){
+    setState(() => team.teamMembers.add((pokemon)));
+    deleting = false;
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+  }
+
+  tryToDeleteTeam(PokemonInstance pokemon) {
+    if (deleting) {
+      loaderDB.deletePokemonInTeam(pokemon);
+    } else {
+      setState(() {
+        deleting = true;
+      });
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
+    Duration durationSnackbar = Duration(milliseconds: 3000);
+
     if (firstLoad) {
       firstLoad = false;
       Map argsTeam = ModalRoute.of(context).settings.arguments;
@@ -154,8 +177,18 @@ class _TeamPageState extends State<TeamPage> {
                         setState(() {
                           onDeletePokemonFromTeam(pokemon);
                         });
-                        ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('${pokemon.name} delete')));
+                        ScaffoldMessenger.of(context).showSnackBar(_snackBar = SnackBar(
+                            duration: durationSnackbar,
+                            content: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text('${team.name} deleted'),
+                                TextButton(
+                                  onPressed: () => cancelDelete(pokemon),
+                                  child: Text('Cancel', style: TextStyle(color: Colors.blueAccent),),
+                                )
+                              ],
+                            )));
                       },
                       // Show a red background as the item is swiped away.
                       background: DeleteBackground(),

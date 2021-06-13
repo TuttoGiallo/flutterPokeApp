@@ -102,7 +102,7 @@ class PokemonInstance extends Pokemon {
   }
 
   int get hiddenPowerDamage {
-    return ((ivHp +
+    return ((_getSecondLastSignificantBit(ivHp) +
                     2 * _getSecondLastSignificantBit(ivAttack) +
                     4 * _getSecondLastSignificantBit(ivDefense) +
                     8 * _getSecondLastSignificantBit(ivSpeed) +

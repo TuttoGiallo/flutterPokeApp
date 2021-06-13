@@ -33,6 +33,7 @@ class LoaderDB {
     return _db;
   }
 
+
   Future _opendDb() async {
     //path_provider  ricerca percorso della cartella documenti dell'applicazione.
     final percorsoDocumenti = await getApplicationDocumentsDirectory();
@@ -99,12 +100,12 @@ class LoaderDB {
   }
 
   Future<void> deleteTeam(Team team) async {
-    deletePokemonFromTeamDbKey(team.dbKey);
+    _deletePokemonFromTeamDbKey(team.dbKey);
     final teamFinder = Finder(filter: Filter.byKey(team.dbKey));
     await _storeTeams.delete(_db, finder: teamFinder);
   }
 
-  Future<void> deletePokemonFromTeamDbKey(int teamDbKey) async {
+  Future<void> _deletePokemonFromTeamDbKey(int teamDbKey) async {
     final pokemonFinder = Finder(filter: Filter.equals('teamDbKey', teamDbKey));
     await _storePokemon.delete(_db, finder: pokemonFinder);
   }

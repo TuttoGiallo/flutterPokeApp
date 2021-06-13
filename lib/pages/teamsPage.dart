@@ -18,6 +18,7 @@ class _TeamsPageState extends State<TeamsPage> {
   LoaderDB loaderDB;
   bool firstLoad =
       true; //TODO: capire perché nell'initState non posso accedere ai valori del ModalRoute...
+  bool deleting = true;
 
   @override
   void initState() {
@@ -57,8 +58,26 @@ class _TeamsPageState extends State<TeamsPage> {
     });
   }
 
+  cancelDelete(Team team){
+    setState(() => teams.add(team));
+    deleting = false;
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+  }
+
+  tryToDeleteTeam(Team team) {
+    if (deleting) {
+      loaderDB.deleteTeam(team);
+    } else {
+      setState(() {
+        deleting = true;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    Duration durationSnackbar = Duration(milliseconds: 3000);
+
     if (firstLoad) {
       firstLoad = false;
       List<Team> argsTeams = ModalRoute.of(context).settings.arguments;
@@ -97,12 +116,25 @@ class _TeamsPageState extends State<TeamsPage> {
             key: UniqueKey(),
             onDismissed: (direction) {
               setState(() {
-                teams.removeAt(index); //TODO: cancellazione da DB
-                loaderDB.deleteTeam(team);
+                teams.removeAt(index);
               });
-              ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('${team.name} deleted')));
+              Future.delayed(durationSnackbar)
+                  .then((value) => tryToDeleteTeam(team));
+
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  duration: durationSnackbar,
+                  content: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('${team.name} deleted'),
+                      TextButton(
+                        onPressed: () => cancelDelete(team),
+                        child: Text('Cancel', style: TextStyle(color: Colors.blueAccent),),
+                      )
+                    ],
+                  )));
             },
+            //TODO se cancello un pokemon, poi il team, e poi annullo la cancellazione del pokemon?
             background: DeleteBackground(),
             child: TeamTile(
               team: team,
