@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart';
 import 'package:poke_team/model/pokemonItem.dart';
+//TODO riuscire a togliere questa referenza... altrimenti non ha senso avviare in parallelo le due chiamate all'avvio dell'app
 import 'package:poke_team/services/loaderDB.dart';
 
 //TODO: leggere il count da chiamata.. usare quindi un client per effettuare due chiamate sequeniali
@@ -68,12 +69,6 @@ class LoaderApi {
               (ee) => ee['language']['name'] == 'en')['short_effect'],
           itemCategory);
       _pokemonItems.add(pokemonItem);
-    }
-  }
-
-  void _loadEffectsOfItems() {
-    for (PokemonItem item in _pokemonItems) {
-      PokemonItem.loadEffectsOfItem(item);
     }
   }
 

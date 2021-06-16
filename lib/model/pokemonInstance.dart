@@ -25,6 +25,72 @@ class PokemonInstance extends Pokemon {
 
   PokemonItem item;
 
+  int get hpWithAbilityAndItem => PokemonItem.itemStatAlter(item, StatName.hp,
+      Ability.abilityStatAlter(this.abilitySelected, StatName.hp, hp));
+
+  int get attackWithAbilityAndItem => PokemonItem.itemStatAlter(
+      item,
+      StatName.attack,
+      Ability.abilityStatAlter(this.abilitySelected, StatName.attack, attack));
+
+  int get defenseWithAbilityAndItem => PokemonItem.itemStatAlter(
+      item,
+      StatName.defense,
+      Ability.abilityStatAlter(
+          this.abilitySelected, StatName.defense, defense));
+
+  int get specialAttackWithAbilityAndItem => PokemonItem.itemStatAlter(
+      item,
+      StatName.specialAttack,
+      Ability.abilityStatAlter(
+          this.abilitySelected, StatName.specialAttack, specialAttack));
+
+  int get specialDefenseWithAbilityAndItem => PokemonItem.itemStatAlter(
+      item,
+      StatName.specialDefense,
+      Ability.abilityStatAlter(
+          this.abilitySelected, StatName.specialDefense, specialDefense));
+
+  int get speedWithAbilityAndItem => PokemonItem.itemStatAlter(
+      item,
+      StatName.speed,
+      Ability.abilityStatAlter(this.abilitySelected, StatName.speed, speed));
+
+  int get hpWithItem => PokemonItem.itemStatAlter(this.item, StatName.hp, hp);
+
+  int get attackWithItem =>
+      PokemonItem.itemStatAlter(this.item, StatName.attack, attack);
+
+  int get defenseWithItem =>
+      PokemonItem.itemStatAlter(this.item, StatName.defense, defense);
+
+  int get specialAttackWithItem => PokemonItem.itemStatAlter(
+      this.item, StatName.specialAttack, specialAttack);
+
+  int get specialDefenseWithItem => PokemonItem.itemStatAlter(
+      this.item, StatName.specialDefense, specialDefense);
+
+  int get speedWithItem =>
+      PokemonItem.itemStatAlter(this.item, StatName.speed, speed);
+
+  int get hpWithAbility =>
+      Ability.abilityStatAlter(this.abilitySelected, StatName.hp, hp);
+
+  int get attackWithAbility =>
+      Ability.abilityStatAlter(this.abilitySelected, StatName.attack, attack);
+
+  int get defenseWithAbility =>
+      Ability.abilityStatAlter(this.abilitySelected, StatName.defense, defense);
+
+  int get specialAttackWithAbility => Ability.abilityStatAlter(
+      this.abilitySelected, StatName.specialAttack, specialAttack);
+
+  int get specialDefenseWithAbility => Ability.abilityStatAlter(
+      this.abilitySelected, StatName.specialDefense, specialDefense);
+
+  int get speedWithAbility =>
+      Ability.abilityStatAlter(this.abilitySelected, StatName.speed, speed);
+
   int get hp => calcStat(StatName.hp);
 
   int get attack => calcStat(StatName.attack);
@@ -92,12 +158,12 @@ class PokemonInstance extends Pokemon {
   int get evSpeed => eV[StatName.speed];
 
   PokemonType get hiddenPowerType {
-    int numberHP = ((ivHp%2 +
-                2 * (ivAttack%2) +
-                4 *  (ivDefense%2) +
-                8 *  (ivSpeed%2) +
-                16 * (ivSpecialAttack%2) +
-                32 * (ivSpecialDefense%2)) *
+    int numberHP = ((ivHp % 2 +
+                2 * (ivAttack % 2) +
+                4 * (ivDefense % 2) +
+                8 * (ivSpeed % 2) +
+                16 * (ivSpecialAttack % 2) +
+                32 * (ivSpecialDefense % 2)) *
             15 /
             63)
         .truncate();
@@ -150,7 +216,9 @@ class PokemonInstance extends Pokemon {
         new Ability.fromMap(jsonDecode(pokemonMap['abilitySelected']));
     this.nature = Nature(NatureName.values[pokemonMap['nature']]);
 
-    this.item = pokemonMap['item'] != 'null' ? PokemonItem.fromMap(jsonDecode(pokemonMap['item'])) : null;
+    this.item = pokemonMap['item'] != 'null'
+        ? PokemonItem.fromMap(jsonDecode(pokemonMap['item']))
+        : null;
 
     this.level = pokemonMap['level'];
 
@@ -218,21 +286,49 @@ class PokemonInstance extends Pokemon {
     return value;
   }
 
-  int getStatFromNameStat(StatName statName) {
+  int getStatFromNameStat(StatName statName,
+      {bool abilityCheck = false, bool itemCheck = false}) {
+    int returnValue = 0;
     switch (statName) {
       case StatName.hp:
-        return hp;
+        if (abilityCheck && !itemCheck) returnValue = hpWithAbility;
+        if (itemCheck && !abilityCheck) returnValue = hpWithItem;
+        if (abilityCheck && itemCheck)  returnValue = hpWithAbilityAndItem;
+        if (!abilityCheck && !itemCheck)returnValue = hp;
+        break;
       case StatName.attack:
-        return attack;
+        if (abilityCheck && !itemCheck) returnValue = attackWithAbility;
+        if (itemCheck && !abilityCheck) returnValue = attackWithItem;
+        if (abilityCheck && itemCheck) returnValue = attackWithAbilityAndItem;
+        if (!abilityCheck && !itemCheck)returnValue = attack;
+        break;
       case StatName.defense:
-        return defense;
+        if (abilityCheck && !itemCheck) returnValue = defenseWithAbility;
+        if (itemCheck && !abilityCheck) returnValue = defenseWithItem;
+        if (abilityCheck && itemCheck) returnValue = defenseWithAbilityAndItem;
+        if (!abilityCheck && !itemCheck)returnValue = defense;
+        break;
       case StatName.specialAttack:
-        return specialAttack;
+        if (abilityCheck && !itemCheck) returnValue = specialAttackWithAbility;
+        if (itemCheck && !abilityCheck) returnValue = specialAttackWithItem;
+        if (abilityCheck && itemCheck)
+          returnValue = specialAttackWithAbilityAndItem;
+        if (!abilityCheck && !itemCheck)returnValue = specialAttack;
+        break;
       case StatName.specialDefense:
-        return specialDefense;
+        if (abilityCheck && !itemCheck) returnValue = specialDefenseWithAbility;
+        if (itemCheck && !abilityCheck) returnValue = specialDefenseWithItem;
+        if (abilityCheck && itemCheck)
+          returnValue = specialDefenseWithAbilityAndItem;
+        if (!abilityCheck && !itemCheck)returnValue = specialDefense;
+        break;
       case StatName.speed:
-        return speed;
+        if (abilityCheck && !itemCheck) returnValue = speedWithAbility;
+        if (itemCheck && !abilityCheck) returnValue = speedWithItem;
+        if (abilityCheck && itemCheck) returnValue = speedWithAbilityAndItem;
+        if (!abilityCheck && !itemCheck)returnValue = speed;
+        break;
     }
-    return 0;
+    return returnValue;
   }
 }

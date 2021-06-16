@@ -7,11 +7,6 @@ class PokemonItem {
 
   ItemCategory itemCategory;
 
-  ///ritorna il fattore di modifica di una singola stat dato da un oggetto
-  ///es: choice-band(atk) -> 1.5, choice-band(def) -> 1
-  ///pokemon Instance è usato per determinare se ci sono determinate condizioni come: evioliote o assault vest
-  Function(StatName stat, PokemonInstance pokemonInstance) effectOnStats;
-
   PokemonItem(this.name, this.description, this.itemCategory);
 
   PokemonItem.fromMap(Map<String, dynamic> pokemonMap) {
@@ -54,27 +49,35 @@ class PokemonItem {
 
   Map toJson() => this.map;
 
+  static int itemStatAlter(PokemonItem item, StatName statName, int statValue) {
+    //TODO finire implementazione
+    if(item == null) return statValue;
 
-  static  void loadEffectsOfItem(PokemonItem item) {
-      //TODO finire implementazione
-      switch (item.name) {
-        case 'choice-band':
-          item.effectOnStats =
-              (StatName stat, PokemonInstance pokemonInstance) => stat == StatName.attack ? 1.5 : 1;
-          break;
-        case 'choice-scarf':
-          item.effectOnStats =
-              (StatName stat, PokemonInstance pokemonInstance) => stat == StatName.speed ? 1.5 : 1;
-          break;
-        case 'choice-specs':
-          item.effectOnStats =
-              (StatName stat, PokemonInstance pokemonInstance) => stat == StatName.specialAttack ? 1.5 : 1;
-          break;
+    double toRoundReturnValue = statValue*1.0;
+    switch (item.name) {
+      case 'choice-band':
+        if (statName == StatName.attack) toRoundReturnValue *= 1.5;
+        break;
+      case 'choice-scarf':
+        if (statName == StatName.speed) toRoundReturnValue *= 1.5;
+        break;
+      case 'choice-specs':
+        if (statName == StatName.specialAttack)
+          toRoundReturnValue *= 1.5;
+        break;
+      case 'life-orb':
+        if (statName == StatName.specialAttack)
+          toRoundReturnValue *= 1.3;
+        if (statName == StatName.attack) toRoundReturnValue *= 1.3;
+        break;
+      case 'assault-vest':
+        if (statName == StatName.specialAttack)
+          toRoundReturnValue *= 1.3;
+        if (statName == StatName.attack) toRoundReturnValue *= 1.3;
+        break;
     }
+    return toRoundReturnValue.round();
   }
-
-
-
 }
 
 enum ItemCategory {

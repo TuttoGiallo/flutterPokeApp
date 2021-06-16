@@ -14,7 +14,6 @@ class _PokeAppState extends State<PokeApp> {
   bool loading = false;
 
   //await loaderDb.resetDb(); //PIALLA DATABASE
-
   @override
   Widget build(BuildContext context) {
     if (!loading) {
@@ -23,18 +22,13 @@ class _PokeAppState extends State<PokeApp> {
       LoaderDB();
       LoaderApi();
 
-  //    LoaderDB.awaitLoadingInstance().then((v) => print('finish awaiting DB'));
-  //    LoaderApi.awaitLoadingInstance().then((v) => print('finish awaiting API'));
-
       Future.wait([
         LoaderDB.awaitLoadingInstance(),
         LoaderApi.awaitLoadingInstance(),
         Future.delayed(const Duration(seconds: 2)),
       ]).then((v) {
-              print('loadin APP done');
-            Navigator.pushReplacementNamed(context, '/teams');
-          }); //TODO check errori sulle chiamate
-
+        Navigator.pushReplacementNamed(context, '/teams');
+      }); //TODO check errori sulle chiamate
     }
 
     return Scaffold(

@@ -42,8 +42,10 @@ class _PokeInfoCardState extends State<PokeInfoCard> {
     pokemonInstance = widget.pokemon;
     selectedAbility = this.widget.pokemon.abilities.firstWhere(
         (ability) => pokemonInstance.abilitySelected.name == ability.name);
+    pokemonItemListWithNullItem = [];
+    pokemonItemListWithNullItem.addAll(widget.pokemonItemList);
     itemNull = PokemonItem('no item', '', ItemCategory.heldItems);
-    pokemonItemListWithNullItem = widget.pokemonItemList..add(itemNull);
+    pokemonItemListWithNullItem.add(itemNull);
     selectedItem = pokemonInstance.item != null
         ? pokemonItemListWithNullItem
             .firstWhere((item) => item.name == pokemonInstance.item.name)

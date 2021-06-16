@@ -72,7 +72,7 @@ class TeamAnalysis {
     for (PokemonType pokemonType in pokemonTypes) {
       mapToReturn[pokemonType] = 0;
       for (PokemonInstance pokemon in team.teamMembers) {
-        if (Ability.abilityDamageModficatorOnType(
+        if (Ability.abilityDamageAlterFactorOnType(
                 pokemon.abilitySelected, pokemonType) ==
             0) {
           mapToReturn[pokemonType] += 1;
@@ -88,7 +88,7 @@ class TeamAnalysis {
     for (PokemonType pokemonType in pokemonTypes) {
       mapToReturn[pokemonType] = 0;
       for (PokemonInstance pokemon in team.teamMembers) {
-        if (Ability.abilityDamageModficatorOnType(
+        if (Ability.abilityDamageAlterFactorOnType(
             pokemon.abilitySelected, pokemonType) ==
             0.5) {
           mapToReturn[pokemonType] += 1;

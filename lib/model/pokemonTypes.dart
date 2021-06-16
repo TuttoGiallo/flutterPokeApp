@@ -185,7 +185,7 @@ class PokemonTypes {
     Map<PokemonType, double> pokemonTypeEffect = getTypeEffectsPokemon(pokemon);
 
     pokemonTypeEffect.keys.forEach((keyType) {
-      double abilityModifier = Ability.abilityDamageModficatorOnType(
+      double abilityModifier = Ability.abilityDamageAlterFactorOnType(
           pokemon.abilitySelected, keyType);
       pokemonTypeEffect[keyType] *= abilityModifier;
     });

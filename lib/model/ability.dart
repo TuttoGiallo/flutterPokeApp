@@ -1,6 +1,9 @@
+import 'package:poke_team/model/pokemonInstance.dart';
+import 'package:poke_team/model/pokemonStats.dart';
 import 'package:poke_team/model/pokemonType.dart';
 import 'package:poke_team/model/pokemonTypes.dart';
 
+//TODO refactor in pokemon ability
 class Ability {
   String name;
   String shortEffect;
@@ -32,47 +35,100 @@ class Ability {
 
   Map toJson() => this.map;
 
-  static double abilityDamageModficatorOnType(
+  static int abilityStatAlter(
+      Ability ability, StatName statName, int statValue) {
+    double returnValue = statValue*1.0;
+    switch (ability.name) {
+      case 'wonder-guard':
+        if (statName == StatName.hp) returnValue = 1;
+        break;
+      case 'huge-power':
+        if (statName == StatName.attack) returnValue *= 2;
+        break;
+      case 'pure-power':
+        if (statName == StatName.attack) returnValue *= 2;
+        break;
+      case 'guts': //TODO controllo condizioni:
+        if (statName == StatName.attack) returnValue *= 2;
+        break;
+      case 'unburden':
+        if (statName == StatName.speed) returnValue *= 2;
+        break;
+      case 'sand-rush':
+        if (statName == StatName.speed) returnValue *= 2;
+        break;
+      case 'sand-force':
+        if (statName == StatName.attack) returnValue *= 1.3;
+        break;
+      case 'chlorophyll':
+        if (statName == StatName.speed) returnValue *= 2;
+        break;
+      case 'swift-swim':
+        if (statName == StatName.speed) returnValue *= 2;
+        break;
+      case 'solar-power':
+        if (statName == StatName.specialAttack) returnValue *= 1.5;
+        break;
+    }
+    return returnValue.round();
+  }
+
+  static double abilityDamageAlterFactorOnType(
       Ability ability, PokemonType pokemonType) {
-    double damageMod = 1;
+    double factor = 1;
     switch (ability.name) {
       case 'levitate':
-        damageMod = pokemonType == PokemonTypes.ground ? 0 : 1;
+        factor = pokemonType == PokemonTypes.ground ? 0 : 1;
         break;
       case 'flash-fire':
-        damageMod = pokemonType == PokemonTypes.fire ? 0 : 1;
+        factor = pokemonType == PokemonTypes.fire ? 0 : 1;
         break;
       case 'lightning-rod':
-        damageMod = pokemonType == PokemonTypes.electric ? 0 : 1;
+        factor = pokemonType == PokemonTypes.electric ? 0 : 1;
         break;
       case 'sap-sipper':
-        damageMod = pokemonType == PokemonTypes.grass ? 0 : 1;
+        factor = pokemonType == PokemonTypes.grass ? 0 : 1;
         break;
       case 'water-absorb':
-        damageMod = pokemonType == PokemonTypes.water ? 0 : 1;
+        factor = pokemonType == PokemonTypes.water ? 0 : 1;
         break;
       case 'storm-drain':
-        damageMod = pokemonType == PokemonTypes.water ? 0 : 1;
+        factor = pokemonType == PokemonTypes.water ? 0 : 1;
+        break;
+      case 'dry-skin':
+        if (pokemonType == PokemonTypes.water) factor = 0;
+        if (pokemonType == PokemonTypes.fire) factor = 1.25;
+        factor = 1;
         break;
       case 'volt-absorb':
-        damageMod = pokemonType == PokemonTypes.electric ? 0 : 1;
+        factor = pokemonType == PokemonTypes.electric ? 0 : 1;
         break;
       case 'thick-fat':
-        damageMod =
+        factor =
             pokemonType == PokemonTypes.ice || pokemonType == PokemonTypes.fire
                 ? 0.5
                 : 1;
         break;
       case 'fluffy':
-        damageMod = pokemonType == PokemonTypes.fire ? 2 : 1;
+        factor = pokemonType == PokemonTypes.fire ? 2 : 1;
         break;
       case 'heatproof':
-        damageMod = pokemonType == PokemonTypes.fire ? 0.5 : 1;
+        factor = pokemonType == PokemonTypes.fire ? 0.5 : 1;
         break;
       case 'water-bubble':
-        damageMod = pokemonType == PokemonTypes.fire ? 0.5 : 1;
+        factor = pokemonType == PokemonTypes.fire ? 0.5 : 1;
         break;
+      case 'wonder-guard': //TODO generalizzare, ora funziona solo nel caso (unico) di shedinja
+        factor = [
+          PokemonTypes.flying,
+          PokemonTypes.rock,
+          PokemonTypes.ghost,
+          PokemonTypes.fire,
+          PokemonTypes.dark
+        ].contains(pokemonType)
+            ? 1
+            : 0;
     }
-    return damageMod;
+    return factor;
   }
 }

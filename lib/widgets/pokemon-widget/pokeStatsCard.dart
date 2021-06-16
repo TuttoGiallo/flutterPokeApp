@@ -29,6 +29,9 @@ class _PokeStatsCardState extends State<PokeStatsCard> {
   bool ivExceed;
   bool evExceed;
 
+  bool checkAbility = false;
+  bool checkItem = false;
+
   @override
   void initState() {
     pokemonInstance = widget.pokemon;
@@ -62,7 +65,7 @@ class _PokeStatsCardState extends State<PokeStatsCard> {
     setState(() {
       int newValue = int.parse(changeValue);
 
-      if(ivOrEv == IVEV.EV){
+      if (ivOrEv == IVEV.EV) {
         this.pokemonInstance.eV[statName] = newValue;
         calcEvExceed();
         calcSumEvExceed();
@@ -72,8 +75,8 @@ class _PokeStatsCardState extends State<PokeStatsCard> {
         this.pokemonInstance.iV[statName] = newValue;
         calcIvExceed();
       }
-
-    });widget.onUpdatePokemonValues(pokemonInstance);
+    });
+    widget.onUpdatePokemonValues(pokemonInstance);
   }
 
   @override
@@ -130,12 +133,14 @@ class _PokeStatsCardState extends State<PokeStatsCard> {
           ],
         ),
         SizedBox(
-          height: 8.0,
+          height: 2.0,
         ),
         SinglePokeStat(
-            stat: pokemonInstance.getStatFromNameStat(statName), maxValue: 500),
+            stat: pokemonInstance.getStatFromNameStat(statName,
+                abilityCheck: checkAbility, itemCheck: checkItem),
+            maxValue: 500),
         SizedBox(
-          height: 20.0,
+          height: 10.0,
         )
       ]));
     }
@@ -191,9 +196,54 @@ class _PokeStatsCardState extends State<PokeStatsCard> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   mainAxisAlignment: MainAxisAlignment.start,
-                  children: widgetsStats
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Container(
+                          //alignment: Alignment.topRight,
+                          child: Text(
+                            'Check Ability:',
+                            style: PokeCustomTheme.getValueStyle(),
+                          ),
+                        ),
+                        Switch(
+                          value: checkAbility,
+                          onChanged: (value) {
+                            setState(() {
+                              checkAbility = value;
+                            });
+                          },
+                          activeTrackColor: Colors.blueAccent,
+                          activeColor: Colors.blueAccent,
+                        ),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Container(
+                          //alignment: Alignment.topRight,
+                          child: Text(
+                            'Check Item:',
+                            style: PokeCustomTheme.getValueStyle(),
+                          ),
+                        ),
+                        Switch(
+                          value: checkItem,
+                          onChanged: (value) {
+                            setState(() {
+                              checkItem = value;
+                            });
+                          },
+                          activeTrackColor: Colors.blueAccent,
+                          activeColor: Colors.blueAccent,
+                        ),
+                      ],
+                    ),
+                  ]..addAll(widgetsStats
                     ..add(
-                        PokeHiddenPowerCard(pokemonInstance: pokemonInstance)),
+                        PokeHiddenPowerCard(pokemonInstance: pokemonInstance))),
                 ),
               ),
             ),
