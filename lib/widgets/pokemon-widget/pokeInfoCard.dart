@@ -2,16 +2,20 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:poke_team/model/ability.dart';
 import 'package:poke_team/model/pokemonInstance.dart';
+import 'package:poke_team/model/pokemonItem.dart';
 import 'package:poke_team/services/pokeCustomTheme.dart';
 import 'package:poke_team/widgets/pokeTypeContainer.dart';
+import 'package:poke_team/widgets/pokemon-widget/pokeItemInfo.dart';
 
 import '../alertDialogInputString.dart';
+import 'pokeAbilityInfo.dart';
 
 class PokeInfoCard extends StatefulWidget {
   const PokeInfoCard(
       {Key key,
       @required this.editing,
       @required this.pokemon,
+      @required this.pokemonItemList,
       @required this.onAddButtonPressed,
       @required this.onUpdatePokemonValues})
       : super(key: key);
@@ -20,6 +24,7 @@ class PokeInfoCard extends StatefulWidget {
   final Function(BuildContext context, PokemonInstance pokemon)
       onAddButtonPressed;
   final Function(PokemonInstance pokemonInstance) onUpdatePokemonValues;
+  final List<PokemonItem> pokemonItemList;
 
   @override
   _PokeInfoCardState createState() => _PokeInfoCardState();
@@ -28,16 +33,27 @@ class PokeInfoCard extends StatefulWidget {
 class _PokeInfoCardState extends State<PokeInfoCard> {
   PokemonInstance pokemonInstance;
   Ability selectedAbility;
+  List<PokemonItem> pokemonItemListWithNullItem;
+  PokemonItem selectedItem;
+  PokemonItem itemNull;
 
   @override
   void initState() {
     pokemonInstance = widget.pokemon;
-    selectedAbility = this.widget.pokemon.abilities.firstWhere((ability) => pokemonInstance.abilitySelected.name == ability.name);
+    selectedAbility = this.widget.pokemon.abilities.firstWhere(
+        (ability) => pokemonInstance.abilitySelected.name == ability.name);
+    itemNull = PokemonItem('no item', '', ItemCategory.heldItems);
+    pokemonItemListWithNullItem = widget.pokemonItemList..add(itemNull);
+    selectedItem = pokemonInstance.item != null
+        ? pokemonItemListWithNullItem
+            .firstWhere((item) => item.name == pokemonInstance.item.name)
+        : itemNull;
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    //TODO: spostare in init?
     List<Widget> widgetsAbility = [];
     this.widget.pokemon.abilities.forEach((ability) {
       widgetsAbility.add(PokeAbilityInfo(ability: ability));
@@ -45,7 +61,14 @@ class _PokeInfoCardState extends State<PokeInfoCard> {
 
     List<DropdownMenuItem<Ability>> dropDownAbility = [];
     this.widget.pokemon.abilities.forEach((ability) {
-      dropDownAbility.add(DropdownMenuItem<Ability>(value: ability, child: PokeAbilityInfo(ability: ability)));
+      dropDownAbility.add(DropdownMenuItem<Ability>(
+          value: ability, child: PokeAbilityInfo(ability: ability)));
+    });
+
+    List<DropdownMenuItem<PokemonItem>> dropDownItem = [];
+    this.pokemonItemListWithNullItem.forEach((item) {
+      dropDownItem.add(DropdownMenuItem<PokemonItem>(
+          value: item, child: PokeItemInfo(item: item)));
     });
 
     return SingleChildScrollView(
@@ -86,8 +109,10 @@ class _PokeInfoCardState extends State<PokeInfoCard> {
               children: [
                 Container(
                   width: 200,
-                  child: Text('${pokemonInstance.firstName}',
-                      style: PokeCustomTheme.getValueStyle(),),
+                  child: Text(
+                    '${pokemonInstance.firstName}',
+                    style: PokeCustomTheme.getValueStyle(),
+                  ),
                 ),
                 Visibility(
                   visible: widget.editing,
@@ -98,10 +123,13 @@ class _PokeInfoCardState extends State<PokeInfoCard> {
                             builder: (BuildContext context) =>
                                 AlertDialogInputString(
                                   title: 'Pokemon Name:',
-                                  helpText: 'Enter the surname of your pokemon.',
+                                  helpText:
+                                      'Enter the surname of your pokemon.',
                                 ));
                         if (returnFromDialog['ok'] &&
-                            returnFromDialog['inputText'].toString().isNotEmpty) {
+                            returnFromDialog['inputText']
+                                .toString()
+                                .isNotEmpty) {
                           setState(() => pokemonInstance.firstName =
                               returnFromDialog['inputText']);
                           widget.onUpdatePokemonValues(pokemonInstance);
@@ -148,74 +176,61 @@ class _PokeInfoCardState extends State<PokeInfoCard> {
               height: 8.0,
             ),
             Visibility(
-              visible: widget.editing,
-              child: DropdownButton<Ability>(
-                iconSize: 40,
-                iconEnabledColor: Colors.grey[200],
-                value: selectedAbility,
-                items: dropDownAbility,
-                onChanged: (ability) {
-                  setState(() {
-                    selectedAbility = ability;
-                    pokemonInstance.abilitySelected = ability;
-                    widget.onUpdatePokemonValues(pokemonInstance);
-                  });
-                },
-              )
-            ),
+                visible: widget.editing,
+                child: DropdownButton<Ability>(
+                  iconSize: 40,
+                  iconEnabledColor: Colors.grey[200],
+                  value: selectedAbility,
+                  items: dropDownAbility,
+                  onChanged: (ability) {
+                    setState(() {
+                      selectedAbility = ability;
+                      pokemonInstance.abilitySelected = ability;
+                      widget.onUpdatePokemonValues(pokemonInstance);
+                    });
+                  },
+                )),
             Visibility(
               visible: !widget.editing,
               child: Column(
                 children: widgetsAbility,
               ),
             ),
-            SizedBox(height: 50,),
+            Visibility(
+              visible: widget.editing,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    height: 34.0,
+                  ),
+                  Text('Item', style: PokeCustomTheme.getFieldStyle()),
+                  SizedBox(
+                    height: 8.0,
+                  ),
+                  DropdownButton<PokemonItem>(
+                    iconSize: 40,
+                    iconEnabledColor: Colors.grey[200],
+                    value: selectedItem,
+                    items: dropDownItem,
+                    onChanged: (item) {
+                      setState(() {
+                        selectedItem = item;
+                        pokemonInstance.item =
+                            item != this.itemNull ? item : null;
+                        widget.onUpdatePokemonValues(pokemonInstance);
+                      });
+                    },
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(
+              height: 50,
+            ),
           ],
         ),
       ),
     );
-  }
-}
-
-//TODO spostare in file a parte
-class PokeAbilityInfo extends StatelessWidget {
-  const PokeAbilityInfo({Key key, @required this.ability}) : super(key: key);
-
-  final Ability ability;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-        child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Container(width: 150, child: Text(ability.name, style: PokeCustomTheme.getValueStyle(), overflow: TextOverflow.ellipsis,)),
-        Visibility(
-            visible: ability.hidden,
-            child: Text('(H)',
-                style: TextStyle(fontSize: 18, color: Colors.grey[300]))),
-        IconButton(
-          color: Colors.grey[300],
-          icon: Icon(
-            Icons.info_outlined,
-            size: 30,
-          ),
-          onPressed: () => showDialog<bool>(
-            context: context,
-            builder: (BuildContext context) => AlertDialog(
-              title: Text(ability.name),
-              content: Text(ability.shortEffect),
-              actions: <Widget>[
-                TextButton(
-                  onPressed: () => Navigator.pop(context, true),
-                  child: const Text('OK'),
-                ),
-                //TODO: "view more" espande la alert box, la rende scroll e mostra il contenuto della descrizione dell'intero effetto
-              ],
-            ),
-          ),
-        ),
-      ],
-    ));
   }
 }

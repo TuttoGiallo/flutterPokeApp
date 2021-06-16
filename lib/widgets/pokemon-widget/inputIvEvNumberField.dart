@@ -28,6 +28,7 @@ class InputIvEvNumberField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     numberController.text = text;
+    numberController.selection = TextSelection.fromPosition(TextPosition(offset: numberController.text.length));
     return Container(
         alignment: Alignment.bottomRight,
         width: width,

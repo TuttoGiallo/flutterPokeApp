@@ -61,16 +61,19 @@ class _PokeStatsCardState extends State<PokeStatsCard> {
   onChanged(String changeValue, StatName statName, IVEV ivOrEv) {
     setState(() {
       int newValue = int.parse(changeValue);
-      if (ivOrEv == IVEV.IV) {
-        this.pokemonInstance.iV[statName] = newValue;
-        calcIvExceed();
-      } else {
+
+      if(ivOrEv == IVEV.EV){
         this.pokemonInstance.eV[statName] = newValue;
         calcEvExceed();
         calcSumEvExceed();
       }
-      widget.onUpdatePokemonValues(pokemonInstance);
-    });
+
+      if (ivOrEv == IVEV.IV) {
+        this.pokemonInstance.iV[statName] = newValue;
+        calcIvExceed();
+      }
+
+    });widget.onUpdatePokemonValues(pokemonInstance);
   }
 
   @override

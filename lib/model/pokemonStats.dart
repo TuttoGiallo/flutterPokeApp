@@ -55,7 +55,7 @@ class PokemonStats {
       StatName.defense,
       StatName.specialAttack,
       StatName.specialDefense,
-      StatName.speed
+      StatName.speed,
     ];
   }
 }

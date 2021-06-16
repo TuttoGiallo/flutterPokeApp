@@ -80,8 +80,7 @@ class _TeamsPageState extends State<TeamsPage> {
 
     if (firstLoad) {
       firstLoad = false;
-      List<Team> argsTeams = ModalRoute.of(context).settings.arguments;
-      teams = argsTeams ?? [];
+      teams = loaderDB.getAllTeamsFromLastDBLoad() ?? [];
     }
 
     return Scaffold(
@@ -108,55 +107,63 @@ class _TeamsPageState extends State<TeamsPage> {
         icon: const Icon(Icons.add),
         backgroundColor: Colors.amber,
       ),
-      body: ListView.builder(
-        itemCount: teams.length,
-        itemBuilder: (context, index) {
-          final team = teams[index];
-          return Dismissible(
-            key: UniqueKey(),
-            onDismissed: (direction) {
-              setState(() {
-                teams.removeAt(index);
-              });
-              Future.delayed(durationSnackbar)
-                  .then((value) => tryToDeleteTeam(team));
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage("assets/pika.png"),
+            fit: BoxFit.scaleDown,
+          ),
+        ),
+        child: ListView.builder(
+          itemCount: teams.length,
+          itemBuilder: (context, index) {
+            final team = teams[index];
+            return Dismissible(
+              key: UniqueKey(),
+              onDismissed: (direction) {
+                setState(() {
+                  teams.removeAt(index);
+                });
+                Future.delayed(durationSnackbar)
+                    .then((value) => tryToDeleteTeam(team));
 
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  duration: durationSnackbar,
-                  content: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text('${team.name} deleted'),
-                      TextButton(
-                        onPressed: () => cancelDelete(team),
-                        child: Text('Cancel', style: TextStyle(color: Colors.blueAccent),),
-                      )
-                    ],
-                  )));
-            },
-            //TODO se cancello un pokemon, poi il team, e poi annullo la cancellazione del pokemon?
-            background: DeleteBackground(),
-            child: TeamTile(
-              team: team,
-              onTeamTap: (Team t) async {
-                await Navigator.pushNamed(context, '/team',
-                    arguments: {'team': team});
-                setState(() {});
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    duration: durationSnackbar,
+                    content: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('${team.name} deleted'),
+                        TextButton(
+                          onPressed: () => cancelDelete(team),
+                          child: Text('Cancel', style: TextStyle(color: Colors.blueAccent),),
+                        )
+                      ],
+                    )));
               },
-              onTeamLongPress: (Team team) async {
-                await showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return OnPressTeamMenu(
-                        team: team,
-                        onRenamedTeam: onRenamedTeam,
-                        onCloneTeam: onCloneTeam,
-                      );
-                    });
-              },
-            ),
-          );
-        },
+              //TODO se cancello un pokemon, poi il team, e poi annullo la cancellazione del pokemon?
+              background: DeleteBackground(),
+              child: TeamTile(
+                team: team,
+                onTeamTap: (Team t) async {
+                  await Navigator.pushNamed(context, '/team',
+                      arguments: {'team': team});
+                  setState(() {});
+                },
+                onTeamLongPress: (Team team) async {
+                  await showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return OnPressTeamMenu(
+                          team: team,
+                          onRenamedTeam: onRenamedTeam,
+                          onCloneTeam: onCloneTeam,
+                        );
+                      });
+                },
+              ),
+            );
+          },
+        ),
       ),
     );
   }

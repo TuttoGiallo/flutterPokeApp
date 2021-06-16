@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:poke_team/model/pokemon.dart';
+import 'package:poke_team/model/pokemonItem.dart';
 import 'package:poke_team/model/pokemonStats.dart';
 import 'package:poke_team/model/pokemonType.dart';
 import 'package:poke_team/model/pokemonTypes.dart';
@@ -21,6 +22,8 @@ class PokemonInstance extends Pokemon {
   int level;
 
   Nature nature;
+
+  PokemonItem item;
 
   int get hp => calcStat(StatName.hp);
 
@@ -146,6 +149,9 @@ class PokemonInstance extends Pokemon {
     this.abilitySelected =
         new Ability.fromMap(jsonDecode(pokemonMap['abilitySelected']));
     this.nature = Nature(NatureName.values[pokemonMap['nature']]);
+
+    this.item = pokemonMap['item'] != 'null' ? PokemonItem.fromMap(jsonDecode(pokemonMap['item'])) : null;
+
     this.level = pokemonMap['level'];
 
     this.iV = {};
@@ -172,6 +178,7 @@ class PokemonInstance extends Pokemon {
       'teamDbKey': team.dbKey,
       'abilitySelected': jsonEncode(abilitySelected),
       'nature': nature.name.index,
+      'item': jsonEncode(item),
       'level': this.level,
       'ivHp': ivHp,
       'ivAttack': ivAttack,
@@ -200,7 +207,7 @@ class PokemonInstance extends Pokemon {
     } else {
       value = (((2 * this.baseStats[statName] +
                       iV[statName] +
-                      (iV[statName] / 4).truncate()) *
+                      (eV[statName] / 4).truncate()) *
                   level /
                   100)
               .truncate() +

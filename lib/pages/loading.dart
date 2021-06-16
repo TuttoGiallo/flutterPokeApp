@@ -22,7 +22,6 @@ class _LoadingState extends State<Loading> {
       PokeApi pAPI = new PokeApi();
       returnMap['pokemon'] = await pAPI.loadByName(pokeName);
     } catch (ex) {
-      returnMap['pokemon'] = null;
       returnMap['ex_code'] = 1;
     }
     returnMap['ex_code'] = 0;

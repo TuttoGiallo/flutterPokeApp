@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:poke_team/model/pokemon.dart';
 import 'package:poke_team/model/pokemonInstance.dart';
 import 'package:poke_team/services/loaderDB.dart';
+import 'package:poke_team/services/loaderApi.dart';
 import 'package:poke_team/widgets/pokemon-widget/pokeBaseStatsCard.dart';
 import 'package:poke_team/widgets/pokemon-widget/pokeInfoCard.dart';
 import 'package:poke_team/widgets/pokemon-widget/pokeStatsCard.dart';
@@ -51,6 +52,7 @@ class _PokemonPageState extends State<PokemonPage> {
       PokeInfoCard(
         editing: !addPokemon,
         pokemon: this.pokemon,
+        pokemonItemList: LoaderApi().getAllPokemonItems(),
         onAddButtonPressed: onAddButtonPress,
         onUpdatePokemonValues: onUpdatePokemonInstance,
       ),

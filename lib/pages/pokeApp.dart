@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:poke_team/model/team.dart';
 import 'package:poke_team/services/loaderDB.dart';
-import 'package:poke_team/services/loadingApi.dart';
+import 'package:poke_team/services/loaderApi.dart';
 
 class PokeApp extends StatefulWidget {
   const PokeApp({Key key}) : super(key: key);
@@ -13,22 +12,29 @@ class PokeApp extends StatefulWidget {
 
 class _PokeAppState extends State<PokeApp> {
   bool loading = false;
-  Future<List<Team>> loadTeams(BuildContext context) async {
-    LoaderDB loaderDb = LoaderDB();
-   //await loaderDb.resetDb(); //PIALLA DATABASE
-    List<Team> teamList = await loaderDb.loadTeams();
-    return teamList;
-  }
+
+  //await loaderDb.resetDb(); //PIALLA DATABASE
 
   @override
   Widget build(BuildContext context) {
     if (!loading) {
       //TODO capire il motivo per il quale se toglo questo if idiota chiama due volte il load e il build! -- sarebbe da mettere stateLess per altro..
       loading = true;
-      LoadingApi.loadAllPokemonNames();
-      loadTeams(context).then((teamList) {
-        Navigator.pushReplacementNamed(context, '/teams', arguments: teamList);
-      });
+      LoaderDB();
+      LoaderApi();
+
+  //    LoaderDB.awaitLoadingInstance().then((v) => print('finish awaiting DB'));
+  //    LoaderApi.awaitLoadingInstance().then((v) => print('finish awaiting API'));
+
+      Future.wait([
+        LoaderDB.awaitLoadingInstance(),
+        LoaderApi.awaitLoadingInstance(),
+        Future.delayed(const Duration(seconds: 2)),
+      ]).then((v) {
+              print('loadin APP done');
+            Navigator.pushReplacementNamed(context, '/teams');
+          }); //TODO check errori sulle chiamate
+
     }
 
     return Scaffold(
@@ -48,7 +54,7 @@ class _PokeAppState extends State<PokeApp> {
               color: Colors.amber,
               size: 180.0,
               borderWidth: 20,
-              duration: Duration(milliseconds: 1500),
+              duration: Duration(milliseconds: 1990),
             ),
           ),
         ),

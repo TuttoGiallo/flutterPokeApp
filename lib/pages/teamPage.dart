@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:poke_team/model/pokemonInstance.dart';
 import 'package:poke_team/model/team.dart';
 import 'package:poke_team/services/loaderDB.dart';
-import 'package:poke_team/services/loadingApi.dart';
+import 'package:poke_team/services/loaderApi.dart';
 import 'package:poke_team/widgets/deleteBackGround.dart';
 import 'package:poke_team/widgets/team-widget/addAPokemonDialog.dart';
 import 'package:poke_team/widgets/team-widget/pokemonListTile.dart';
@@ -52,7 +52,7 @@ class _TeamPageState extends State<TeamPage> {
         context: context,
         builder: (BuildContext context) => AlertDialog(
           title: const Text('Pokemon non trovato'),
-          content: const Text('Il nome o l\'ID inserito non è corretto.'),
+          content: Text('Il nome o l\'ID inserito non è corretto.'),
           actions: <Widget>[
             TextButton(
               onPressed: () => Navigator.pop(context),
@@ -157,7 +157,7 @@ class _TeamPageState extends State<TeamPage> {
           Map returnFromDialog = await showDialog(
               context: context,
               builder: (BuildContext context) => AddAPokemonDialog(
-                allPokemonName: LoadingApi.getAllPokemonName(),
+                allPokemonName: LoaderApi().getAllPokemonName(),
               ));
           if (returnFromDialog['ok']) {
             onAddedPokemon(returnFromDialog['pokemonName']);
@@ -168,52 +168,60 @@ class _TeamPageState extends State<TeamPage> {
         backgroundColor: Colors.amber,
       ),
     ),
-      body: IndexedStack(index: _menuStringIndex[_selectedItem], children: [
-        ReorderableListView(
-            children: team.teamMembers
-                .map((pokemon) => Dismissible(
-                      key: UniqueKey(), //key dupplicata per spostamento e
-                      onDismissed: (direction) {
-                        setState(() {
-                          onDeletePokemonFromTeam(pokemon);
-                        });
-                        ScaffoldMessenger.of(context).showSnackBar(_snackBar = SnackBar(
-                            duration: durationSnackbar,
-                            content: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text('${team.name} deleted'),
-                                TextButton(
-                                  onPressed: () => cancelDelete(pokemon),
-                                  child: Text('Cancel', style: TextStyle(color: Colors.blueAccent),),
-                                )
-                              ],
-                            )));
-                      },
-                      // Show a red background as the item is swiped away.
-                      background: DeleteBackground(),
-                      child: Container(
-                        key: ValueKey(pokemon),
-                        child: PokemonListTile(
-                            pokemon: pokemon,
-                            onPokemonTapForInfo: onPokemonTapForInfo),
-                      ),
-                    ))
-                .toList(),
-            // The reorder function
-            onReorder: (oldIndex, newIndex) {
-              setState(() {
-                if (newIndex > oldIndex) {
-                  newIndex -= 1;
-                }
-                final poke = team.teamMembers.removeAt(oldIndex);
-                team.teamMembers..insert(newIndex, poke);
-              });
-            }),
-        TeamCoverage(team: team),
-        TeamStats(team: team),
-        //Text('Editing'),
-      ]),
+      body: Container(
+        decoration: team.isTeamEmpty() ? BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage("assets/cleffa.png"),
+            fit: BoxFit.scaleDown,
+          ),
+        ) : null,
+        child: IndexedStack(index: _menuStringIndex[_selectedItem], children: [
+          ReorderableListView(
+              children: team.teamMembers
+                  .map((pokemon) => Dismissible(
+                        key: UniqueKey(), //key dupplicata per spostamento e
+                        onDismissed: (direction) {
+                          setState(() {
+                            onDeletePokemonFromTeam(pokemon);
+                          });
+                          ScaffoldMessenger.of(context).showSnackBar(_snackBar = SnackBar(
+                              duration: durationSnackbar,
+                              content: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text('${pokemon.name} deleted'),
+                                  TextButton(
+                                    onPressed: () => cancelDelete(pokemon),
+                                    child: Text('Cancel', style: TextStyle(color: Colors.blueAccent),),
+                                  )
+                                ],
+                              )));
+                        },
+                        // Show a red background as the item is swiped away.
+                        background: DeleteBackground(),
+                        child: Container(
+                          key: ValueKey(pokemon),
+                          child: PokemonListTile(
+                              pokemon: pokemon,
+                              onPokemonTapForInfo: onPokemonTapForInfo),
+                        ),
+                      ))
+                  .toList(),
+              // The reorder function
+              onReorder: (oldIndex, newIndex) {
+                setState(() {
+                  if (newIndex > oldIndex) {
+                    newIndex -= 1;
+                  }
+                  final poke = team.teamMembers.removeAt(oldIndex);
+                  team.teamMembers..insert(newIndex, poke);
+                });
+              }),
+          TeamCoverage(team: team),
+          TeamStats(team: team),
+          //Text('Editing'),
+        ]),
+      ),
     );
   }
 }
