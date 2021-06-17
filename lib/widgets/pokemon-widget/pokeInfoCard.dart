@@ -43,7 +43,8 @@ class _PokeInfoCardState extends State<PokeInfoCard> {
     selectedAbility = this.widget.pokemon.abilities.firstWhere(
         (ability) => pokemonInstance.abilitySelected.name == ability.name);
     pokemonItemListWithNullItem = [];
-    pokemonItemListWithNullItem.addAll(widget.pokemonItemList);
+    pokemonItemListWithNullItem.addAll(widget.pokemonItemList
+        .where((item) => item.itemCategory != ItemCategory.megaStones));
     itemNull = PokemonItem('no item', '', ItemCategory.heldItems);
     pokemonItemListWithNullItem.add(itemNull);
     selectedItem = pokemonInstance.item != null
@@ -55,6 +56,7 @@ class _PokeInfoCardState extends State<PokeInfoCard> {
 
   @override
   Widget build(BuildContext context) {
+    bool megaPokemon = widget.pokemon.isMega();
     //TODO: spostare in init?
     List<Widget> widgetsAbility = [];
     this.widget.pokemon.abilities.forEach((ability) {
@@ -210,19 +212,30 @@ class _PokeInfoCardState extends State<PokeInfoCard> {
                   SizedBox(
                     height: 8.0,
                   ),
-                  DropdownButton<PokemonItem>(
-                    iconSize: 40,
-                    iconEnabledColor: Colors.grey[200],
-                    value: selectedItem,
-                    items: dropDownItem,
-                    onChanged: (item) {
-                      setState(() {
-                        selectedItem = item;
-                        pokemonInstance.item =
-                            item != this.itemNull ? item : null;
-                        widget.onUpdatePokemonValues(pokemonInstance);
-                      });
-                    },
+                  Visibility(
+                    visible: megaPokemon,
+                    child: megaPokemon
+                        ? PokeItemInfo(
+                            item: PokemonItem.getMegaStoneFor(
+                                widget.pokemon, widget.pokemonItemList))
+                        : Text('MegaStonePlaceForNotMegaPokemon'),
+                  ),
+                  Visibility(
+                    visible: !megaPokemon,
+                    child: DropdownButton<PokemonItem>(
+                      iconSize: 40,
+                      iconEnabledColor: Colors.grey[200],
+                      value: selectedItem,
+                      items: dropDownItem,
+                      onChanged: (item) {
+                        setState(() {
+                          selectedItem = item;
+                          pokemonInstance.item =
+                              item != this.itemNull ? item : null;
+                          widget.onUpdatePokemonValues(pokemonInstance);
+                        });
+                      },
+                    ),
                   ),
                 ],
               ),

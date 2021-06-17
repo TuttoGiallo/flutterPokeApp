@@ -94,5 +94,9 @@ class Pokemon {
       'baseSpeed': baseSpeed,
     };
   }
+
+  bool isMega(){
+    return (this.name.endsWith('-mega'));
+  }
 }
 

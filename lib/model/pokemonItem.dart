@@ -1,3 +1,4 @@
+import 'package:poke_team/model/pokemon.dart';
 import 'package:poke_team/model/pokemonStats.dart';
 
 class PokemonItem {
@@ -77,6 +78,12 @@ class PokemonItem {
         break;
     }
     return toRoundReturnValue.round();
+  }
+
+  static PokemonItem getMegaStoneFor(Pokemon pokemon, List<PokemonItem> items) {
+    return items.firstWhere((item) =>
+        item.itemCategory == ItemCategory.megaStones &&
+        item.description.toUpperCase().contains(pokemon.name.split('-').first.toUpperCase()));
   }
 }
 
