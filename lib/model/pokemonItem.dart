@@ -69,8 +69,7 @@ class PokemonItem {
         if (statName == StatName.attack) toRoundReturnValue *= 1.3;
         break;
       case 'assault-vest':
-        if (statName == StatName.specialAttack) toRoundReturnValue *= 1.3;
-        if (statName == StatName.attack) toRoundReturnValue *= 1.3;
+        if (statName == StatName.specialDefense) toRoundReturnValue *= 1.5;
         break;
       case 'eviolite':
         if (statName == StatName.defense) toRoundReturnValue *= 1.5;

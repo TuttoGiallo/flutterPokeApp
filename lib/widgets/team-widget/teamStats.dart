@@ -59,7 +59,7 @@ class _TeamStatsState extends State<TeamStats> {
           ),
           AnimatedSwitchedPokemonDetails(
             open: openPokemonDetails[statName],
-            team: widget.team,
+            pokemonList: widget.team.teamMembers,
             statName: statName,
             checkAbility: checkAbility,
             checkItem: checkItem,

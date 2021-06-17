@@ -8,14 +8,19 @@ import 'package:poke_team/model/wrinDamage.dart';
 class TeamAnalysis {
   static Map<PokemonType, Map<WeaknessResistanceImmunityNormalDamage, int>>
       summaryEffectOnTeam(Team team, {bool withAbility = false}) {
+    return summaryEffectOnPokemonList(team.teamMembers, withAbility: withAbility);
+  }
+
+  static Map<PokemonType, Map<WeaknessResistanceImmunityNormalDamage, int>>
+  summaryEffectOnPokemonList(List<PokemonInstance> pokemonList, {bool withAbility = false}) {
     PokemonTypes pokemonTypes = PokemonTypes();
     Map<PokemonType, Map<WeaknessResistanceImmunityNormalDamage, int>>
-        summaryEffects = {};
+    summaryEffects = {};
     pokemonTypes
         .getAllTypes()
         .forEach((type) => summaryEffects[type] = _getNewMapWrinDamageInt());
 
-    for (PokemonInstance pokemon in team.teamMembers) {
+    for (PokemonInstance pokemon in pokemonList) {
       Map pokeRes = pokemonTypes.getFilteredSortedTypePokemonEffect(
           pokemon, WeaknessResistanceImmunityNormalDamage.resistance, withAbility: withAbility);
       Map pokeWea = pokemonTypes.getFilteredSortedTypePokemonEffect(
@@ -26,17 +31,19 @@ class TeamAnalysis {
           pokemon, WeaknessResistanceImmunityNormalDamage.normal,  withAbility: withAbility);
 
       pokeRes.keys.forEach((resType) => summaryEffects[resType]
-          [WeaknessResistanceImmunityNormalDamage.resistance] += 1);
+      [WeaknessResistanceImmunityNormalDamage.resistance] += 1);
       pokeWea.keys.forEach((weaType) => summaryEffects[weaType]
-          [WeaknessResistanceImmunityNormalDamage.weakness] += 1);
+      [WeaknessResistanceImmunityNormalDamage.weakness] += 1);
       pokeImm.keys.forEach((immType) => summaryEffects[immType]
-          [WeaknessResistanceImmunityNormalDamage.immunity] += 1);
+      [WeaknessResistanceImmunityNormalDamage.immunity] += 1);
       pokeNor.keys.forEach((norType) => summaryEffects[norType]
-          [WeaknessResistanceImmunityNormalDamage.normal] += 1);
+      [WeaknessResistanceImmunityNormalDamage.normal] += 1);
     }
 
     return summaryEffects;
   }
+
+
 
   static Map<WeaknessResistanceImmunityNormalDamage, int>
       _getNewMapWrinDamageInt() {

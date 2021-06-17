@@ -60,10 +60,10 @@ class Team {
     return teamMembers.length > 0;
   }
 
-  List<PokemonInstance> getANewListOfMemeberSortedByStat(StatName statName,
+  static List<PokemonInstance> getANewListOfMemberSortedByStat(List<PokemonInstance> pokemonList, StatName statName,
       {abilityCheck = false, itemCheck = false, desc = false}) {
     List<PokemonInstance> sortedMemberList = [];
-    sortedMemberList.addAll(this.teamMembers);
+    sortedMemberList.addAll(pokemonList);
     if (desc)
       sortedMemberList.sort((p1, p2) =>
           p1.getStatFromNameStat(statName,
