@@ -1,12 +1,13 @@
 import 'dart:convert';
 
 import 'package:poke_team/model/pokemonInstance.dart';
+import 'package:poke_team/model/pokemonStats.dart';
 
-class Team{
+class Team {
   String name;
   int dbKey;
 
-  List <PokemonInstance> teamMembers = [  ];
+  List<PokemonInstance> teamMembers = [];
 
   Team(this.name);
 
@@ -20,7 +21,7 @@ class Team{
     };
   }
 
-  Map<String, dynamic> get mapTeamAndMember{
+  Map<String, dynamic> get mapTeamAndMember {
     List<Map<String, dynamic>> members = [];
     this.teamMembers.forEach((pokemon) => members.add(pokemon.toJson()));
     return {
@@ -31,31 +32,50 @@ class Team{
 
   Map toJson() => this.mapTeamAndMember;
 
-  set teamPokemon(List<PokemonInstance> teamPokemon){
+  set teamPokemon(List<PokemonInstance> teamPokemon) {
     this.teamMembers = teamPokemon;
   }
 
-  void addPokemon(PokemonInstance pokemon){
+  void addPokemon(PokemonInstance pokemon) {
     this.teamMembers.add(pokemon);
   }
 
-  void removePokemon(PokemonInstance pokemon){
+  void removePokemon(PokemonInstance pokemon) {
     this.teamMembers.remove(pokemon);
   }
 
-  bool isTeamFull(){
+  bool isTeamFull() {
     return teamMembers.length >= 6;
   }
 
-  bool isTeamNotFull(){
+  bool isTeamNotFull() {
     return teamMembers.length < 6;
   }
 
-  bool isTeamEmpty(){
+  bool isTeamEmpty() {
     return teamMembers.length == 0;
   }
 
-  bool isTeamNotEmpty(){
+  bool isTeamNotEmpty() {
     return teamMembers.length > 0;
+  }
+
+  List<PokemonInstance> getANewListOfMemeberSortedByStat(StatName statName,
+      {abilityCheck = false, itemCheck = false, desc = false}) {
+    List<PokemonInstance> sortedMemberList = [];
+    sortedMemberList.addAll(this.teamMembers);
+    if (desc)
+      sortedMemberList.sort((p1, p2) =>
+          p1.getStatFromNameStat(statName,
+              abilityCheck: abilityCheck, itemCheck: itemCheck) -
+          p2.getStatFromNameStat(statName,
+              abilityCheck: abilityCheck, itemCheck: itemCheck));
+    else
+      sortedMemberList.sort((p1, p2) =>
+          p2.getStatFromNameStat(statName,
+              abilityCheck: abilityCheck, itemCheck: itemCheck) -
+          p1.getStatFromNameStat(statName,
+              abilityCheck: abilityCheck, itemCheck: itemCheck));
+    return sortedMemberList;
   }
 }

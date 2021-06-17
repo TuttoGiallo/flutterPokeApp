@@ -1,4 +1,3 @@
-import 'package:poke_team/model/pokemonInstance.dart';
 import 'package:poke_team/model/pokemonStats.dart';
 
 class PokemonItem {
@@ -51,9 +50,9 @@ class PokemonItem {
 
   static int itemStatAlter(PokemonItem item, StatName statName, int statValue) {
     //TODO finire implementazione
-    if(item == null) return statValue;
+    if (item == null) return statValue;
 
-    double toRoundReturnValue = statValue*1.0;
+    double toRoundReturnValue = statValue * 1.0;
     switch (item.name) {
       case 'choice-band':
         if (statName == StatName.attack) toRoundReturnValue *= 1.5;
@@ -62,18 +61,19 @@ class PokemonItem {
         if (statName == StatName.speed) toRoundReturnValue *= 1.5;
         break;
       case 'choice-specs':
-        if (statName == StatName.specialAttack)
-          toRoundReturnValue *= 1.5;
+        if (statName == StatName.specialAttack) toRoundReturnValue *= 1.5;
         break;
       case 'life-orb':
-        if (statName == StatName.specialAttack)
-          toRoundReturnValue *= 1.3;
+        if (statName == StatName.specialAttack) toRoundReturnValue *= 1.3;
         if (statName == StatName.attack) toRoundReturnValue *= 1.3;
         break;
       case 'assault-vest':
-        if (statName == StatName.specialAttack)
-          toRoundReturnValue *= 1.3;
+        if (statName == StatName.specialAttack) toRoundReturnValue *= 1.3;
         if (statName == StatName.attack) toRoundReturnValue *= 1.3;
+        break;
+      case 'eviolite':
+        if (statName == StatName.defense) toRoundReturnValue *= 1.5;
+        if (statName == StatName.specialDefense) toRoundReturnValue *= 1.5;
         break;
     }
     return toRoundReturnValue.round();

@@ -26,7 +26,7 @@ class _TeamPageState extends State<TeamPage> {
   final Map<String, int> _menuStringIndex = {
     'Pokemon': 0,
     'Coverages': 1,
-    'Average Stats': 2,
+    'Team Stats': 2,
     //'Editing': 3,
   };
 

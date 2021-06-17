@@ -13,7 +13,6 @@ class PokeApp extends StatefulWidget {
 class _PokeAppState extends State<PokeApp> {
   bool loading = false;
 
-
   @override
   Widget build(BuildContext context) {
     if (!loading) {
