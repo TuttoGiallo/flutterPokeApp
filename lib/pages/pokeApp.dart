@@ -13,12 +13,13 @@ class PokeApp extends StatefulWidget {
 class _PokeAppState extends State<PokeApp> {
   bool loading = false;
 
-  //await loaderDb.resetDb(); //PIALLA DATABASE
+
   @override
   Widget build(BuildContext context) {
     if (!loading) {
       //TODO capire il motivo per il quale se toglo questo if idiota chiama due volte il load e il build! -- sarebbe da mettere stateLess per altro..
       loading = true;
+
       LoaderDB();
       LoaderApi();
 
@@ -27,6 +28,7 @@ class _PokeAppState extends State<PokeApp> {
         LoaderApi.awaitLoadingInstance(),
         Future.delayed(const Duration(seconds: 2)),
       ]).then((v) {
+        //LoaderDB().resetDb(); //PIALLA DATABASE
         Navigator.pushReplacementNamed(context, '/teams');
       }); //TODO check errori sulle chiamate
     }

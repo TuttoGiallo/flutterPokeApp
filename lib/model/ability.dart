@@ -1,4 +1,3 @@
-import 'package:poke_team/model/pokemonInstance.dart';
 import 'package:poke_team/model/pokemonStats.dart';
 import 'package:poke_team/model/pokemonType.dart';
 import 'package:poke_team/model/pokemonTypes.dart';

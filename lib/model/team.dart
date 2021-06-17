@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:poke_team/model/pokemonInstance.dart';
 
 class Team{
@@ -17,6 +19,17 @@ class Team{
       'name': name,
     };
   }
+
+  Map<String, dynamic> get mapTeamAndMember{
+    List<Map<String, dynamic>> members = [];
+    this.teamMembers.forEach((pokemon) => members.add(pokemon.toJson()));
+    return {
+      'team': map,
+      'members': members,
+    };
+  }
+
+  Map toJson() => this.mapTeamAndMember;
 
   set teamPokemon(List<PokemonInstance> teamPokemon){
     this.teamMembers = teamPokemon;

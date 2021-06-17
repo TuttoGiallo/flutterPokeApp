@@ -264,6 +264,8 @@ class PokemonInstance extends Pokemon {
     return returnMap;
   }
 
+  Map toJson() => this.map..remove('teamDbKey');
+
   //TODO shedinja ability
   int calcStat(StatName statName) {
     int value;

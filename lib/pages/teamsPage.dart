@@ -3,8 +3,13 @@ import 'package:poke_team/model/pokemonInstance.dart';
 import 'package:poke_team/model/team.dart';
 import 'package:poke_team/services/loaderDB.dart';
 import 'package:poke_team/widgets/alertDialogInputString.dart';
+import 'package:poke_team/widgets/alertDialogText.dart';
 import 'package:poke_team/widgets/deleteBackGround.dart';
+import 'package:poke_team/widgets/teams-widget/importTeam.dart';
+import 'package:poke_team/widgets/teams-widget/onPressTeamMenu.dart';
 import 'package:poke_team/widgets/teams-widget/teamTile.dart';
+import 'package:share_plus/share_plus.dart';
+import 'dart:convert';
 
 class TeamsPage extends StatefulWidget {
   const TeamsPage({Key key}) : super(key: key);
@@ -41,6 +46,61 @@ class _TeamsPageState extends State<TeamsPage> {
     loaderDB.renameTeam(team);
   }
 
+  onShareTextTeam(Team team) {
+    String encodedTeam = jsonEncode(team.toJson());
+    Share.share(encodedTeam);
+  }
+
+  //TODO verificare suo funzionamento
+  String getPrettyJSONString(jsonObject) {
+    var encoder = new JsonEncoder.withIndent("     ");
+    return encoder.convert(jsonObject);
+  }
+
+  //TODO ccontrolli sul team: ad esempio se sto inserendo 7 pokemon, se metto nomi che non esistono di oggetti...
+  //altro modo, ma più stupido, è quello di provare a criptare e poi decriptare la stringa, così che non sia modificabile da fuori.
+  onImportTeam(String jsonTeam) {
+    if (jsonTeam.isEmpty) {
+      showDialog<String>(
+          context: context,
+          builder: (BuildContext context) => AlertDialogText(
+                textTitle: 'Import Team:',
+                textContent: 'Text area empty',
+              ));
+      return;
+    }
+    try {
+      Map decodedTeam = jsonDecode(jsonTeam);
+      print(decodedTeam['team']['name']);
+      Team newTeam = Team(decodedTeam['team']['name']);
+      LoaderDB().storeNewTeam(newTeam).then((dbKeyTeam) {
+        print(decodedTeam['members']);
+        for (dynamic pokemonMap in decodedTeam['members']) {
+          print(pokemonMap['name']);
+          PokemonInstance newAddedPokemon =
+              PokemonInstance.fromMap(-1, pokemonMap, newTeam);
+          loaderDB
+              .storePokemonInstanceInTeam(newAddedPokemon)
+              .then((newDbKey) => newAddedPokemon.dbKey = newDbKey);
+          newTeam.addPokemon(newAddedPokemon);
+        }
+        setState(() {
+          teams.add(newTeam);
+          _selectedItem = 'Teams';
+        });
+      });
+    } on FormatException catch (ex) {
+      print('error formta in input');
+      showDialog<String>(
+          context: context,
+          builder: (BuildContext context) => AlertDialogText(
+                textTitle: 'Import Team:',
+                textContent: 'Format of team unexpected',
+              ));
+      return;
+    }
+  }
+
   onCloneTeam(Team team) async {
     //TODO await this, altrimenti rischio di non avere la chiave DB corretta, spinner sul dialog?!
     Team newTeam = new Team.fromMap(-1, team.map);
@@ -58,7 +118,7 @@ class _TeamsPageState extends State<TeamsPage> {
     });
   }
 
-  cancelDelete(Team team){
+  cancelDelete(Team team) {
     setState(() => teams.add(team));
     deleting = false;
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
@@ -73,6 +133,14 @@ class _TeamsPageState extends State<TeamsPage> {
       });
     }
   }
+
+  String _selectedItem = 'Teams';
+  final Map<String, int> _menuStringIndex = {
+    'Teams': 0,
+    'Import Team': 1,
+    'Settings': 2,
+    //'Editing': 3,
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -89,198 +157,127 @@ class _TeamsPageState extends State<TeamsPage> {
         title: Text('My Teams'),
         centerTitle: true,
         backgroundColor: Colors.amber,
-        automaticallyImplyLeading: false, //disable back arrow
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () async {
-          Map returnFromDialog = await showDialog(
-              context: context,
-              builder: (BuildContext context) => AlertDialogInputString(
-                    title: 'Add a Team:',
-                    helpText: 'Enter the name of the new team',
-                  ));
-          if (returnFromDialog != null && returnFromDialog['ok']) {
-            onAddedTeam(returnFromDialog['inputText']);
-          }
-        },
-        label: const Text('Add a new Team!'),
-        icon: const Icon(Icons.add),
-        backgroundColor: Colors.amber,
-      ),
-      body: Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage("assets/pika.png"),
-            fit: BoxFit.scaleDown,
-          ),
-        ),
-        child: ListView.builder(
-          itemCount: teams.length,
-          itemBuilder: (context, index) {
-            final team = teams[index];
-            return Dismissible(
-              key: UniqueKey(),
-              onDismissed: (direction) {
-                setState(() {
-                  teams.removeAt(index);
-                });
-                Future.delayed(durationSnackbar)
-                    .then((value) => tryToDeleteTeam(team));
-
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    duration: durationSnackbar,
-                    content: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text('${team.name} deleted'),
-                        TextButton(
-                          onPressed: () => cancelDelete(team),
-                          child: Text('Cancel', style: TextStyle(color: Colors.blueAccent),),
-                        )
-                      ],
-                    )));
-              },
-              //TODO se cancello un pokemon, poi il team, e poi annullo la cancellazione del pokemon?
-              background: DeleteBackground(),
-              child: TeamTile(
-                team: team,
-                onTeamTap: (Team t) async {
-                  await Navigator.pushNamed(context, '/team',
-                      arguments: {'team': team});
-                  setState(() {});
-                },
-                onTeamLongPress: (Team team) async {
-                  await showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return OnPressTeamMenu(
-                          team: team,
-                          onRenamedTeam: onRenamedTeam,
-                          onCloneTeam: onCloneTeam,
-                        );
-                      });
-                },
-              ),
-            );
-          },
-        ),
-      ),
-    );
-  }
-}
-
-class OnPressTeamMenu extends StatelessWidget {
-  const OnPressTeamMenu(
-      {Key key,
-      @required this.team,
-      @required this.onRenamedTeam,
-      @required this.onCloneTeam})
-      : super(key: key);
-  final Team team;
-  final Function(Team team, String name) onRenamedTeam;
-  final Function(Team team) onCloneTeam;
-
-  @override
-  Widget build(BuildContext context) {
-    return SimpleDialog(
-      title: Text('Team Menu:'),
-      children: [
-        OnPressTeamMenuItem(
-          icon: Icons.text_fields,
-          color: Colors.grey,
-          text: 'rename',
-          onPressed: () async {
-            await showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return RenameATeamDialog(
-                      team: team, onRenamedTeam: onRenamedTeam);
-                });
-            Navigator.pop(context, 'rename');
-          },
-        ),
-        OnPressTeamMenuItem(
-          icon: Icons.copy,
-          color: Colors.grey,
-          text: 'clone',
-          onPressed: () async {
-            onCloneTeam(team);
-            Navigator.pop(context, 'clone');
-          },
-        ),
-      ],
-    );
-  }
-}
-
-class OnPressTeamMenuItem extends StatelessWidget {
-  const OnPressTeamMenuItem(
-      {Key key, this.icon, this.color, this.text, this.onPressed})
-      : super(key: key);
-
-  final IconData icon;
-  final Color color;
-  final String text;
-  final VoidCallback onPressed; //TODO capire cosa significa VoidCallback
-
-  @override
-  Widget build(BuildContext context) {
-    return SimpleDialogOption(
-      onPressed: onPressed,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Icon(icon, size: 36.0, color: color),
-          Padding(
-            padding: const EdgeInsetsDirectional.only(start: 16.0),
-            child: Text(text),
+        automaticallyImplyLeading: false,
+        actions: [
+          PopupMenuButton(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(15.0))),
+            iconSize: 35,
+            color: Colors.grey[800],
+            itemBuilder: (BuildContext bc) {
+              return _menuStringIndex.keys
+                  .map((teamOption) => PopupMenuItem(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 15.0, horizontal: 20),
+                        child: Text(teamOption),
+                        value: teamOption,
+                        textStyle: TextStyle(
+                          color: teamOption != _selectedItem
+                              ? Colors.grey[300]
+                              : Colors.amber,
+                          fontSize: 20,
+                        ),
+                      ))
+                  .toList();
+            },
+            onSelected: (value) {
+              setState(() {
+                _selectedItem = value;
+              });
+            },
           ),
         ],
       ),
-    );
-  }
-}
-
-class RenameATeamDialog extends StatelessWidget {
-  RenameATeamDialog(
-      {Key key, @required this.onRenamedTeam, @required this.team})
-      : super(key: key);
-
-  final Function(Team team, String teamName) onRenamedTeam;
-  final TextEditingController textController = new TextEditingController();
-  final Team team;
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: const Text('Rename a Team:'),
-      content: SizedBox(
-        width: 250,
-        child: TextField(
-            controller: textController,
-            key: key,
-            decoration:
-                const InputDecoration(helperText: "Enter the team's name"),
-            style: TextStyle(
-              fontSize: 28.0,
-              color: Colors.grey[800],
-              fontStyle: FontStyle.italic,
-            )),
-      ),
-      actions: <Widget>[
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel'),
-        ),
-        TextButton(
-          onPressed: () {
-            onRenamedTeam(team, textController.text);
-            Navigator.pop(context);
+      floatingActionButton: Visibility(
+        visible: _selectedItem == 'Teams',
+        child: FloatingActionButton.extended(
+          onPressed: () async {
+            Map returnFromDialog = await showDialog(
+                context: context,
+                builder: (BuildContext context) => AlertDialogInputString(
+                      title: 'Add a Team:',
+                      helpText: 'Enter the name of the new team',
+                    ));
+            if (returnFromDialog != null && returnFromDialog['ok']) {
+              onAddedTeam(returnFromDialog['inputText']);
+            }
           },
-          child: const Text('OK'),
+          label: const Text('Add a new Team!'),
+          icon: const Icon(Icons.add),
+          backgroundColor: Colors.amber,
         ),
-      ],
+      ),
+      body: IndexedStack(
+        index: _menuStringIndex[_selectedItem],
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage("assets/pika.png"),
+                fit: BoxFit.scaleDown,
+              ),
+            ),
+            child: ListView.builder(
+              itemCount: teams.length,
+              itemBuilder: (context, index) {
+                final team = teams[index];
+                return Dismissible(
+                  key: UniqueKey(),
+                  onDismissed: (direction) {
+                    setState(() {
+                      teams.removeAt(index);
+                    });
+                    Future.delayed(durationSnackbar)
+                        .then((value) => tryToDeleteTeam(team));
+
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        duration: durationSnackbar,
+                        content: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text('${team.name} deleted'),
+                            TextButton(
+                              onPressed: () => cancelDelete(team),
+                              child: Text(
+                                'Cancel',
+                                style: TextStyle(color: Colors.blueAccent),
+                              ),
+                            )
+                          ],
+                        )));
+                  },
+                  //TODO se cancello un pokemon, poi il team, e poi annullo la cancellazione del pokemon?
+                  background: DeleteBackground(),
+                  child: TeamTile(
+                    team: team,
+                    onTeamTap: (Team t) async {
+                      await Navigator.pushNamed(context, '/team',
+                          arguments: {'team': team});
+                      setState(() {});
+                    },
+                    onTeamLongPress: (Team team) async {
+                      await showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return OnPressTeamMenu(
+                              team: team,
+                              onRenamedTeam: onRenamedTeam,
+                              onCloneTeam: onCloneTeam,
+                              onShareTextTeam: onShareTextTeam,
+                            );
+                          });
+                    },
+                  ),
+                );
+              },
+            ),
+          ),
+          ImportTeam(
+            onImportTeam: onImportTeam,
+          ),
+          Text('Settings'),
+        ],
+      ),
     );
   }
 }

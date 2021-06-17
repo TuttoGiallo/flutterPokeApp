@@ -102,6 +102,5 @@ class LoaderApi {
 
       if (maxCycle != 0 && maxCycle == i) break;
     }
-    print('loader API done');
   }
 }
